@@ -39,7 +39,19 @@ The profile normalizer still reads earlier field names so existing Airtable data
 | Grad Year | `Grad Year` | `Graduation Year`, `Grade`, `School Year` |
 | SAT / ACT | `SAT / ACT` | `SAT Score`, `ACT Score` |
 | Highlight Video | `Highlight Video` | `Highlight Video URL` |
-| Profile Photo | `Photo URL` | `Athlete Photo`, `Photo` |
+| Profile Photo | `Photo URL` | `Athlete Photo`, `Photo`, `Photo Upload` |
+
+## Airtable Write Alias Fallbacks
+
+When the canonical Airtable field is missing, the Apply API tries these aliases before dropping the field:
+
+| Canonical Field | Write Alias Fallbacks |
+| --- | --- |
+| School | `Current School` |
+| Grad Year | `Graduation Year`, `Grade`, `School Year` |
+| SAT / ACT | `SAT Score`, `ACT Score` |
+| Highlight Video | `Highlight Video URL` |
+| Photo URL | `Photo Upload`, `Athlete Photo`, `Photo` |
 
 ## Mismatches Fixed
 

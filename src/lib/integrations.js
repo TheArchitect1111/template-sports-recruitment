@@ -40,6 +40,13 @@ const REQUIRED_AIRTABLE_FIELDS = [
   { name: 'Highlight Video', type: 'url' },
   { name: 'Photo URL', type: 'url' }
 ]
+const AIRTABLE_FIELD_ALIASES = {
+  School: ['Current School'],
+  'Grad Year': ['Graduation Year', 'Grade', 'School Year'],
+  'SAT / ACT': ['SAT Score', 'ACT Score'],
+  'Highlight Video': ['Highlight Video URL'],
+  'Photo URL': ['Photo Upload', 'Athlete Photo', 'Photo']
+}
 
 function normalizeSport(value) {
   const text = String(value || '').trim()
@@ -257,6 +264,28 @@ function stripRetryableField(fields, error) {
   return nextFields
 }
 
+function remapUnknownField(fields, error, attemptedAliases) {
+  const fieldName = getUnknownFieldName(error)
+  const canonicalField = AIRTABLE_FIELD_ALIASES[fieldName]
+    ? fieldName
+    : Object.keys(AIRTABLE_FIELD_ALIASES).find((key) => AIRTABLE_FIELD_ALIASES[key].includes(fieldName))
+  const aliases = AIRTABLE_FIELD_ALIASES[canonicalField] || []
+  const value = fields[fieldName]
+  const startIndex = canonicalField === fieldName ? 0 : aliases.indexOf(fieldName) + 1
+
+  for (const alias of aliases.slice(startIndex)) {
+    if (!attemptedAliases.has(`${canonicalField}:${alias}`) && !(alias in fields)) {
+      const nextFields = { ...fields }
+      delete nextFields[fieldName]
+      nextFields[alias] = value
+      attemptedAliases.add(`${canonicalField}:${alias}`)
+      return { fields: nextFields, from: canonicalField, to: alias }
+    }
+  }
+
+  return null
+}
+
 export async function createAirtableRecord(fields) {
   try {
     const result = await airtableFetch('', {
@@ -281,16 +310,23 @@ export async function createAirtableRecord(fields) {
     } catch (schemaError) {
       let retryFields = { ...fields }
       const droppedFields = []
+      const remappedFields = []
+      const attemptedAliases = new Set()
       let lastError = getRetryableFieldName(schemaError) ? schemaError : firstError
 
       for (let index = 0; index < Object.keys(fields).length; index += 1) {
-        const strippedFields = stripRetryableField(retryFields, lastError)
+        const remapped = remapUnknownField(retryFields, lastError, attemptedAliases)
+        const strippedFields = remapped?.fields || stripRetryableField(retryFields, lastError)
         if (!strippedFields) {
           throw lastError
         }
 
         const droppedField = getRetryableFieldName(lastError)
-        droppedFields.push(droppedField)
+        if (remapped) {
+          remappedFields.push(`${remapped.from} -> ${remapped.to}`)
+        } else {
+          droppedFields.push(droppedField)
+        }
         retryFields = strippedFields
 
         const result = await airtableFetch('', {
@@ -302,7 +338,7 @@ export async function createAirtableRecord(fields) {
         })
 
         if (result) {
-          return { skipped: false, id: result.id, droppedFields }
+          return { skipped: false, id: result.id, droppedFields, remappedFields }
         }
       }
 

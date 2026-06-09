@@ -297,7 +297,7 @@ export function normalizeAthleteRecord(record) {
     gradYear: getFieldValue(fields, ['Grad Year', 'Graduation Year', 'Grade', 'School Year']),
     school: getFieldValue(fields, ['School', 'Current School']),
     cityProvince: getFieldValue(fields, ['City/Province', 'City', 'Province']),
-    photoUrl: getAttachmentUrl(getFieldValue(fields, ['Athlete Photo', 'Photo', 'Photo URL'], '')),
+    photoUrl: getAttachmentUrl(getFieldValue(fields, ['Photo URL', 'Athlete Photo', 'Photo', 'Photo Upload'], '')),
     height: getFieldValue(fields, ['Height']),
     weight: getFieldValue(fields, ['Weight']),
     wingspan: getFieldValue(fields, ['Wingspan']),
