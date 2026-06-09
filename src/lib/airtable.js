@@ -1,6 +1,6 @@
 const PROFILE_SLUG_FIELD = 'Profile Slug'
 const PROFILE_URL_FIELD = 'Profile URL'
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://template-sports-recruitment.vercel.app'
+const PROFILE_SITE_URL = process.env.PROFILE_SITE_URL || 'https://template-sports-recruitment.vercel.app'
 
 export function getAirtableConfig() {
   return {
@@ -19,7 +19,7 @@ export function createAthleteSlug(firstName, lastName, fallback = '') {
 }
 
 export function createProfileUrl(slugOrId) {
-  return `${SITE_URL.replace(/\/$/, '')}/athlete/${slugOrId}`
+  return `${PROFILE_SITE_URL.replace(/\/$/, '')}/athlete/${slugOrId}`
 }
 
 function airtableUrl(path = '', query = '') {
