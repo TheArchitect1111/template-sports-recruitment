@@ -97,6 +97,32 @@ button {
   font-weight: 950;
 }
 
+.cprLogo {
+  width: 58px;
+  height: 58px;
+  display: grid;
+  place-items: center;
+  flex: 0 0 auto;
+  border: 3px solid #ffffff;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at center, #0A0A0A 0 48%, transparent 49%),
+    conic-gradient(from 30deg, #CC0000 0 25%, #ffffff 25% 31%, #CC0000 31% 56%, #ffffff 56% 62%, #CC0000 62% 100%);
+  box-shadow: 0 0 0 3px #CC0000;
+}
+
+.cprLogo span {
+  display: grid;
+  place-items: center;
+  width: 39px;
+  height: 39px;
+  border-radius: 50%;
+  color: #ffffff;
+  background: #0A0A0A;
+  font-size: 0.76rem;
+  font-weight: 950;
+}
+
 .topNav {
   gap: 18px;
   color: var(--muted);
@@ -109,14 +135,14 @@ button {
 }
 
 .homeHero {
-  min-height: 82vh;
+  min-height: calc(100vh - 78px);
   display: grid;
-  grid-template-columns: minmax(0, 1.1fr) minmax(320px, 0.7fr);
-  gap: clamp(28px, 6vw, 84px);
+  grid-template-columns: minmax(0, 0.92fr) minmax(340px, 0.78fr);
+  gap: clamp(28px, 7vw, 96px);
   align-items: center;
-  padding: clamp(56px, 9vw, 120px) clamp(20px, 6vw, 88px);
+  padding: clamp(58px, 8vw, 116px) clamp(20px, 6vw, 88px);
   background:
-    radial-gradient(circle at 82% 28%, rgba(204, 0, 0, 0.22), transparent 28%),
+    radial-gradient(circle at 82% 28%, rgba(204, 0, 0, 0.28), transparent 31%),
     linear-gradient(135deg, #0A0A0A 0%, #111111 52%, #050505 100%);
 }
 
@@ -147,9 +173,16 @@ h3 {
 }
 
 h1 {
-  font-size: clamp(3.4rem, 8.5vw, 7.4rem);
-  line-height: 0.95;
+  font-size: clamp(3.8rem, 8vw, 7rem);
+  line-height: 0.9;
   max-width: 900px;
+  font-weight: 950;
+  text-transform: uppercase;
+}
+
+h1 span {
+  display: block;
+  color: #CC0000;
 }
 
 h2 {
@@ -162,11 +195,40 @@ h3 {
 }
 
 .heroCopy {
-  max-width: 710px;
+  max-width: 680px;
   margin: 24px 0 0;
   color: var(--muted);
   font-size: clamp(1.06rem, 1.8vw, 1.3rem);
   line-height: 1.6;
+}
+
+.heroPhoto {
+  min-height: clamp(430px, 55vw, 680px);
+  position: relative;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background:
+    linear-gradient(180deg, rgba(10, 10, 10, 0.05), rgba(10, 10, 10, 0.58)),
+    url('https://images.unsplash.com/photo-1546519638-68e109498ffc?auto=format&fit=crop&w=1200&q=85') center / cover;
+  box-shadow: 0 28px 90px rgba(204, 0, 0, 0.22);
+}
+
+.photoBadge {
+  position: absolute;
+  left: 24px;
+  bottom: 24px;
+  display: grid;
+  gap: 4px;
+  padding: 14px 16px;
+  border-radius: 8px;
+  color: #ffffff;
+  background: rgba(10, 10, 10, 0.78);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+}
+
+.photoBadge strong {
+  color: #CC0000;
 }
 
 .heroActions {
@@ -330,11 +392,30 @@ button:disabled {
 }
 
 .sectionBand,
+.processSection,
+.showcaseSection,
+.trackingSection,
+.statsMapSection,
+.storiesSection,
 .applyShell,
 .adminShell,
 .profileShell {
   width: min(1180px, calc(100% - 40px));
   margin: 86px auto;
+}
+
+.processSection,
+.storiesSection {
+  width: 100%;
+  margin: 0;
+  padding: clamp(60px, 8vw, 108px) clamp(20px, 6vw, 88px);
+  color: #0A0A0A;
+  background: #ffffff;
+}
+
+.centered {
+  margin-inline: auto;
+  text-align: center;
 }
 
 .sectionIntro {
@@ -347,6 +428,230 @@ button:disabled {
   display: grid;
   grid-template-columns: repeat(5, minmax(0, 1fr));
   gap: 14px;
+}
+
+.processSection .eyebrow,
+.storiesSection .eyebrow {
+  color: #CC0000;
+}
+
+.processSection .processStep,
+.storiesSection .testimonialCard {
+  color: #0A0A0A;
+  background: #ffffff;
+  border-color: rgba(10, 10, 10, 0.12);
+  box-shadow: 0 18px 45px rgba(10, 10, 10, 0.08);
+}
+
+.processSection .processStep p,
+.storiesSection .testimonialCard p,
+.storiesSection .testimonialCard span {
+  color: #4b4b4b;
+}
+
+.processIcon {
+  width: 54px;
+  height: 54px;
+  display: grid;
+  place-items: center;
+  margin-bottom: 18px;
+  border-radius: 50%;
+  color: #ffffff;
+  background: #CC0000;
+  font-size: 1.1rem;
+  font-weight: 950;
+}
+
+.showcaseSection,
+.trackingSection,
+.statsMapSection {
+  padding-block: 20px;
+}
+
+.showcaseGrid,
+.trackingSection {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(340px, 0.74fr);
+  gap: clamp(24px, 5vw, 70px);
+  align-items: center;
+}
+
+.uploadGrid,
+.featureGrid,
+.sampleStats {
+  display: grid;
+  gap: 14px;
+}
+
+.uploadGrid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.uploadTile,
+.featureBox,
+.sampleProfile,
+.dashboardMockup {
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--panel);
+}
+
+.uploadTile {
+  min-height: 104px;
+  display: grid;
+  align-content: center;
+  gap: 10px;
+  padding: 18px;
+}
+
+.uploadTile span {
+  width: 34px;
+  height: 34px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  color: #ffffff;
+  background: #CC0000;
+  font-weight: 950;
+}
+
+.sampleProfile {
+  padding: clamp(20px, 3vw, 32px);
+}
+
+.sampleTop {
+  display: flex;
+  gap: 18px;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.sampleAvatar {
+  width: 86px;
+  height: 86px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  color: #ffffff;
+  background: #CC0000;
+  font-size: 1.8rem;
+  font-weight: 950;
+}
+
+.sampleTop span,
+.sampleDetails,
+.trackingCopy p {
+  color: var(--muted);
+}
+
+.sampleStats {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.sampleStats span {
+  display: grid;
+  gap: 4px;
+  padding: 14px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.sampleStats strong {
+  color: #CC0000;
+}
+
+.sampleDetails {
+  margin-top: 22px;
+}
+
+.featureGrid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  margin-top: 28px;
+}
+
+.featureBox {
+  min-height: 82px;
+  display: grid;
+  align-items: center;
+  padding: 18px;
+  font-weight: 900;
+}
+
+.dashboardMockup {
+  padding: 18px;
+  min-height: 430px;
+  background:
+    linear-gradient(180deg, rgba(204, 0, 0, 0.18), rgba(255, 255, 255, 0.03)),
+    #111111;
+}
+
+.mockupHeader {
+  display: flex;
+  gap: 8px;
+  padding-bottom: 18px;
+}
+
+.mockupHeader span {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: #CC0000;
+}
+
+.mockupBody {
+  display: grid;
+  gap: 18px;
+}
+
+.mockupChart {
+  height: 180px;
+  border-radius: 8px;
+  background:
+    linear-gradient(135deg, transparent 0 30%, rgba(204, 0, 0, 0.65) 31% 38%, transparent 39%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.03));
+}
+
+.mockupList {
+  display: grid;
+  gap: 12px;
+}
+
+.mockupList span {
+  height: 38px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.statsMapSection {
+  display: grid;
+  gap: 28px;
+  align-items: center;
+  padding: clamp(38px, 6vw, 70px) 0;
+}
+
+.canadaMap {
+  display: grid;
+  place-items: center;
+  min-height: 180px;
+}
+
+.canadaMap svg {
+  width: min(560px, 88vw);
+  height: auto;
+  fill: rgba(204, 0, 0, 0.22);
+  stroke: #CC0000;
+  stroke-width: 8;
+  stroke-linejoin: round;
+}
+
+.statsMapSection .statsBar {
+  width: 100%;
+  margin: 0;
+  background: #0A0A0A;
+}
+
+.statsMapSection .statsBar strong {
+  color: #CC0000;
 }
 
 .testimonialGrid {
@@ -377,24 +682,55 @@ button:disabled {
   font-weight: 950;
 }
 
+.processSection .processIcon {
+  color: #ffffff;
+}
+
 .ctaBand {
-  width: min(1180px, calc(100% - 40px));
+  width: 100%;
   justify-content: space-between;
   gap: 28px;
-  margin: 86px auto;
-  padding: clamp(24px, 5vw, 52px);
-  border: 1px solid rgba(204, 0, 0, 0.52);
-  border-radius: 8px;
-  background: linear-gradient(135deg, rgba(204, 0, 0, 0.2), rgba(255, 255, 255, 0.04));
+  margin: 0;
+  padding: clamp(42px, 7vw, 78px) clamp(20px, 6vw, 88px);
+  border: 0;
+  border-radius: 0;
+  color: #ffffff;
+  background: #CC0000;
+}
+
+.ctaBand .eyebrow {
+  color: #ffffff;
+}
+
+.lightAction {
+  color: #ffffff;
+  border-color: #ffffff;
+  background: transparent;
 }
 
 .footer {
-  display: flex;
-  justify-content: space-between;
-  gap: 20px;
-  padding: 28px clamp(20px, 6vw, 88px);
+  display: grid;
+  grid-template-columns: 1.35fr repeat(3, minmax(150px, 1fr));
+  gap: clamp(24px, 5vw, 62px);
+  padding: clamp(44px, 7vw, 78px) clamp(20px, 6vw, 88px);
   color: var(--muted);
   border-top: 1px solid var(--line);
+  background: #0A0A0A;
+}
+
+.footer div {
+  display: grid;
+  align-content: start;
+  gap: 12px;
+}
+
+.footer strong {
+  color: #ffffff;
+}
+
+.footer p {
+  margin: 0;
+  line-height: 1.55;
 }
 
 .applyHero {
@@ -579,6 +915,8 @@ textarea {
 
 @media (max-width: 980px) {
   .homeHero,
+  .showcaseGrid,
+  .trackingSection,
   .formGrid,
   .processGrid,
   .testimonialGrid,
