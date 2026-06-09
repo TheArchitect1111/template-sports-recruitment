@@ -41,6 +41,24 @@ export default function AthleteProfileCard({ athlete }) {
 
       <AthleteStatsCard athlete={profile} />
 
+      <section className="athleteSection">
+        <h2>Athlete Details</h2>
+        <div className="athleteDetailGrid">
+          <div>
+            <span>Sport</span>
+            <strong>{profile.sport || 'Not Provided'}</strong>
+          </div>
+          <div>
+            <span>Phone</span>
+            <strong>{profile.phone || 'Not Provided'}</strong>
+          </div>
+          <div>
+            <span>Date of Birth</span>
+            <strong>{profile.dateOfBirth || 'Not Provided'}</strong>
+          </div>
+        </div>
+      </section>
+
       <section className="athleteProfileGrid">
         <section className="athleteSection">
           <h2>Athlete Bio</h2>

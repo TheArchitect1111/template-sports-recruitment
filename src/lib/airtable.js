@@ -95,7 +95,10 @@ function escapeFormulaValue(value) {
 
 function getFieldValue(fields, fieldNames, fallback = NOT_PROVIDED) {
   for (const fieldName of fieldNames) {
-    const value = fields[fieldName]
+    const actualFieldName = Object.prototype.hasOwnProperty.call(fields, fieldName)
+      ? fieldName
+      : Object.keys(fields).find((key) => key.toLowerCase() === fieldName.toLowerCase())
+    const value = actualFieldName ? fields[actualFieldName] : undefined
     if (Array.isArray(value)) {
       if (value.length > 0) {
         return value
@@ -109,6 +112,14 @@ function getFieldValue(fields, fieldNames, fallback = NOT_PROVIDED) {
   }
 
   return fallback
+}
+
+function getCombinedName(fields) {
+  const firstName = getFieldValue(fields, ['First Name', 'First'], '')
+  const lastName = getFieldValue(fields, ['Last Name', 'Last'], '')
+  const combinedName = `${firstName || ''} ${lastName || ''}`.trim()
+
+  return combinedName || getFieldValue(fields, ['Athlete Name', 'Full Name', 'Name'])
 }
 
 function getAttachmentUrl(value) {
@@ -282,10 +293,10 @@ export async function updateAthleteProfileFields(recordId, payload) {
 export function normalizeAthleteRecord(record) {
   const fields = record?.fields || {}
   const recordId = record?.id || ''
-  const firstName = fields['First Name'] || ''
-  const lastName = fields['Last Name'] || ''
+  const firstName = getFieldValue(fields, ['First Name', 'First'], '')
+  const lastName = getFieldValue(fields, ['Last Name', 'Last'], '')
   const slug = fields[PROFILE_SLUG_FIELD] || createAthleteSlug(firstName, lastName, recordId)
-  const name = `${firstName || ''} ${lastName || ''}`.trim() || NOT_PROVIDED
+  const name = getCombinedName(fields)
 
   return {
     id: recordId,
@@ -293,6 +304,9 @@ export function normalizeAthleteRecord(record) {
     profileUrl: fields[PROFILE_URL_FIELD] || createProfileUrl(slug),
     fields,
     name,
+    sport: getFieldValue(fields, ['Sport']),
+    phone: getFieldValue(fields, ['Phone', 'Phone Number']),
+    dateOfBirth: getFieldValue(fields, ['Date of Birth', 'DOB', 'Birth Date']),
     position: getFieldValue(fields, ['Position', 'Primary Position']),
     gradYear: getFieldValue(fields, ['Grad Year', 'Graduation Year', 'Grade', 'School Year']),
     school: getFieldValue(fields, ['School', 'Current School']),

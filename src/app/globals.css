@@ -135,6 +135,33 @@
   font-size: clamp(1.25rem, 2.6vw, 2rem);
 }
 
+.athleteDetailGrid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.athleteDetailGrid div {
+  display: grid;
+  gap: 8px;
+  padding: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.athleteDetailGrid span {
+  color: var(--muted);
+  font-size: 0.78rem;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.athleteDetailGrid strong {
+  color: #ffffff;
+  overflow-wrap: anywhere;
+}
+
 .athleteProfileGrid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));

@@ -9,12 +9,23 @@ function isAirtableAccessError(error) {
 }
 
 function createFallbackAthlete(id) {
+  const nameFromSlug = /^rec[a-zA-Z0-9]+$/.test(id)
+    ? 'Not Provided'
+    : id
+        .split('-')
+        .filter(Boolean)
+        .map((part) => `${part.charAt(0).toUpperCase()}${part.slice(1)}`)
+        .join(' ')
+
   return {
     id,
     slug: id,
     profileUrl: createProfileUrl(id),
     fields: {},
-    name: 'Not Provided',
+    name: nameFromSlug || 'Not Provided',
+    sport: 'Not Provided',
+    phone: 'Not Provided',
+    dateOfBirth: 'Not Provided',
     position: 'Not Provided',
     gradYear: 'Not Provided',
     school: 'Not Provided',
