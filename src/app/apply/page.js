@@ -25,6 +25,7 @@ const initialForm = {
   bio: '',
   strengths: '',
   highlightVideoUrl: '',
+  profilePhotoUrl: '',
   photoUpload: '',
   transcriptUpload: '',
   gameplayVideoUpload: '',
@@ -54,7 +55,8 @@ const textFields = [
   ['parentName', 'Parent name', 'text', true],
   ['parentEmail', 'Parent email', 'email', true],
   ['parentPhone', 'Parent phone', 'tel', true],
-  ['highlightVideoUrl', 'Highlight video URL', 'url', false]
+  ['highlightVideoUrl', 'Highlight video URL', 'url', false],
+  ['profilePhotoUrl', 'Profile photo URL', 'url', false]
 ]
 
 export default function ApplyPage() {

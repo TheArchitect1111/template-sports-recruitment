@@ -20,6 +20,26 @@ function normalizeSchoolYear(value) {
 }
 
 const sportOptions = ['Basketball', 'Football', 'Baseball', 'Soccer', 'Volleyball', 'Track', 'Other']
+const REQUIRED_AIRTABLE_FIELDS = [
+  { name: 'First Name', type: 'singleLineText' },
+  { name: 'Last Name', type: 'singleLineText' },
+  { name: 'Email', type: 'email' },
+  { name: 'Phone', type: 'phoneNumber' },
+  { name: 'Date of Birth', type: 'singleLineText' },
+  { name: 'Sport', type: 'singleSelect', options: { choices: sportOptions.map((name) => ({ name })) } },
+  { name: 'Position', type: 'singleLineText' },
+  { name: 'Height', type: 'singleLineText' },
+  { name: 'Weight', type: 'singleLineText' },
+  { name: 'Wingspan', type: 'singleLineText' },
+  { name: 'School', type: 'singleLineText' },
+  { name: 'Grad Year', type: 'singleLineText' },
+  { name: 'GPA', type: 'singleLineText' },
+  { name: 'SAT / ACT', type: 'singleLineText' },
+  { name: 'Bio', type: 'multilineText' },
+  { name: 'Strengths', type: 'multilineText' },
+  { name: 'Highlight Video', type: 'url' },
+  { name: 'Photo URL', type: 'url' }
+]
 
 function normalizeSport(value) {
   const text = String(value || '').trim()
@@ -43,9 +63,9 @@ export function normalizeApplicant(payload) {
     Weight: payload.weight,
     Wingspan: payload.wingspan,
     GPA: payload.gpa,
-    'SAT Score': payload.satScore,
-    'Current School': payload.currentSchool,
-    'Graduation Year': schoolYear,
+    'SAT / ACT': payload.satScore,
+    School: payload.currentSchool,
+    'Grad Year': schoolYear,
     Grade: schoolYear,
     'School Year': schoolYear,
     Classification: schoolYear,
@@ -55,7 +75,8 @@ export function normalizeApplicant(payload) {
     'Parent Phone': payload.parentPhone,
     Bio: payload.bio,
     Strengths: payload.strengths,
-    'Highlight Video URL': payload.highlightVideoUrl,
+    'Highlight Video': payload.highlightVideoUrl,
+    'Photo URL': payload.profilePhotoUrl,
     'Photo Upload': payload.photoUpload,
     'Transcript Upload': payload.transcriptUpload,
     'Gameplay Video Upload': payload.gameplayVideoUpload,
@@ -70,16 +91,35 @@ export function normalizeApplicant(payload) {
 }
 
 export function normalizeAirtableApplicant(payload) {
+  const schoolYear = normalizeSchoolYear(payload.graduationYear)
   const sport = normalizeSport(payload.sport)
 
-  return {
+  return removeEmptyFields({
     'First Name': payload.firstName,
     'Last Name': payload.lastName,
     Email: payload.email,
     Phone: payload.phone,
     'Date of Birth': payload.dateOfBirth,
-    Sport: sport
-  }
+    Sport: sport,
+    Position: payload.position,
+    Height: payload.height,
+    Weight: payload.weight,
+    Wingspan: payload.wingspan,
+    School: payload.currentSchool,
+    'Grad Year': schoolYear,
+    GPA: payload.gpa,
+    'SAT / ACT': payload.satScore,
+    Bio: payload.bio,
+    Strengths: payload.strengths,
+    'Highlight Video': payload.highlightVideoUrl,
+    'Photo URL': payload.profilePhotoUrl
+  })
+}
+
+function removeEmptyFields(fields) {
+  return Object.fromEntries(
+    Object.entries(fields).filter(([, value]) => value !== null && value !== undefined && String(value).trim() !== '')
+  )
 }
 
 function getAirtableUrl(path = '', query = '') {
@@ -105,23 +145,151 @@ async function airtableFetch(path, options = {}, query = '') {
 
   const body = await response.json().catch(() => ({}))
   if (!response.ok) {
-    throw new Error(body.error?.message || 'Airtable request failed')
+    const error = new Error(body.error?.message || 'Airtable request failed')
+    error.status = response.status
+    error.code = body.error?.type
+    error.airtableBody = body
+    throw error
   }
 
   return body
 }
 
-export async function createAirtableRecord(fields) {
-  const result = await airtableFetch('', {
-    method: 'POST',
-    body: JSON.stringify({ fields })
+async function airtableMetaFetch(path, options = {}) {
+  const { apiKey, baseId } = getAirtableConfig()
+  if (!apiKey || !baseId) {
+    return { skipped: true }
+  }
+
+  const response = await fetch(`https://api.airtable.com/v0/meta/bases/${baseId}${path}`, {
+    ...options,
+    headers: {
+      Authorization: `Bearer ${apiKey}`,
+      'Content-Type': 'application/json',
+      ...options.headers
+    },
+    cache: 'no-store'
   })
 
-  if (result.skipped) {
+  const body = await response.json().catch(() => ({}))
+  if (!response.ok) {
+    const error = new Error(body.error?.message || 'Airtable metadata request failed')
+    error.status = response.status
+    error.code = body.error?.type
+    error.airtableBody = body
+    throw error
+  }
+
+  return body
+}
+
+async function ensureApplicationFields() {
+  const { tableId } = getAirtableConfig()
+  const base = await airtableMetaFetch('/tables')
+  if (base.skipped) {
     return { skipped: true, reason: 'Airtable credentials are incomplete' }
   }
 
-  return { skipped: false, id: result.id }
+  const table = base.tables?.find((item) => item.id === tableId || item.name === tableId)
+  if (!table) {
+    return { skipped: true, reason: 'Airtable table metadata was not found' }
+  }
+
+  const existingFields = new Set((table.fields || []).map((field) => field.name))
+  const created = []
+
+  for (const field of REQUIRED_AIRTABLE_FIELDS) {
+    if (existingFields.has(field.name)) {
+      continue
+    }
+
+    const body = {
+      name: field.name,
+      type: field.type
+    }
+
+    if (field.options) {
+      body.options = field.options
+    }
+
+    await airtableMetaFetch(`/tables/${table.id}/fields`, {
+      method: 'POST',
+      body: JSON.stringify(body)
+    })
+    created.push(field.name)
+  }
+
+  return { skipped: false, created }
+}
+
+function getUnknownFieldName(error) {
+  const match = String(error?.message || '').match(/Unknown field name: "([^"]+)"/i)
+  return match?.[1] || ''
+}
+
+function stripUnknownField(fields, error) {
+  const unknownField = getUnknownFieldName(error)
+  if (!unknownField || !(unknownField in fields)) {
+    return null
+  }
+
+  const nextFields = { ...fields }
+  delete nextFields[unknownField]
+  return nextFields
+}
+
+export async function createAirtableRecord(fields) {
+  try {
+    const result = await airtableFetch('', {
+      method: 'POST',
+      body: JSON.stringify({ fields })
+    })
+
+    if (result.skipped) {
+      return { skipped: true, reason: 'Airtable credentials are incomplete' }
+    }
+
+    return { skipped: false, id: result.id, droppedFields: [] }
+  } catch (firstError) {
+    try {
+      await ensureApplicationFields()
+      const result = await airtableFetch('', {
+        method: 'POST',
+        body: JSON.stringify({ fields })
+      })
+
+      return { skipped: false, id: result.id, droppedFields: [] }
+    } catch (schemaError) {
+      let retryFields = { ...fields }
+      const droppedFields = []
+      let lastError = getUnknownFieldName(schemaError) ? schemaError : firstError
+
+      for (let index = 0; index < Object.keys(fields).length; index += 1) {
+        const strippedFields = stripUnknownField(retryFields, lastError)
+        if (!strippedFields) {
+          throw lastError
+        }
+
+        const droppedField = getUnknownFieldName(lastError)
+        droppedFields.push(droppedField)
+        retryFields = strippedFields
+
+        const result = await airtableFetch('', {
+          method: 'POST',
+          body: JSON.stringify({ fields: retryFields })
+        }).catch((error) => {
+          lastError = error
+          return null
+        })
+
+        if (result) {
+          return { skipped: false, id: result.id, droppedFields }
+        }
+      }
+
+      throw lastError
+    }
+  }
 }
 
 export async function listAirtableRecords() {
