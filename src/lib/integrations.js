@@ -7,10 +7,7 @@ export function getAirtableConfig() {
 }
 
 export function normalizeApplicant(payload) {
-  const athleteName = `${payload.firstName || ''} ${payload.lastName || ''}`.trim()
-
   return {
-    'Athlete Name': athleteName,
     'First Name': payload.firstName,
     'Last Name': payload.lastName,
     Email: payload.email,
@@ -42,6 +39,17 @@ export function normalizeApplicant(payload) {
     Status: 'New',
     Source: 'Canadian Prospects Recruitment',
     'Submitted At': new Date().toISOString()
+  }
+}
+
+export function normalizeAirtableApplicant(payload) {
+  return {
+    'First Name': payload.firstName,
+    'Last Name': payload.lastName,
+    Email: payload.email,
+    Phone: payload.phone,
+    'Date of Birth': payload.dateOfBirth,
+    Sport: payload.sport
   }
 }
 
@@ -88,7 +96,7 @@ export async function createAirtableRecord(fields) {
 }
 
 export async function listAirtableRecords() {
-  const query = '?maxRecords=100&sort%5B0%5D%5Bfield%5D=Submitted%20At&sort%5B0%5D%5Bdirection%5D=desc'
+  const query = '?maxRecords=100'
   const result = await airtableFetch('', {}, query)
 
   if (result.skipped) {
@@ -109,16 +117,11 @@ export async function getAirtableRecord(id) {
 }
 
 export async function updateAirtableStatus(id, status) {
-  const result = await airtableFetch(`/${id}`, {
-    method: 'PATCH',
-    body: JSON.stringify({ fields: { Status: status } })
-  })
-
-  if (result.skipped) {
-    return { skipped: true, record: null }
+  return {
+    skipped: true,
+    reason: `Status was not updated in Airtable because the current table does not include a Status field. Requested status: ${status}`,
+    record: { id, fields: {} }
   }
-
-  return { skipped: false, record: result }
 }
 
 export async function notifyMake(fields) {

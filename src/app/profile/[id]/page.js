@@ -7,7 +7,7 @@ export default async function ProfilePage({ params }) {
   const { id } = await params
   const profile = await getAirtableRecord(id).catch(() => null)
   const fields = profile?.record?.fields || {}
-  const athleteName = fields['Athlete Name'] || `${fields['First Name'] || ''} ${fields['Last Name'] || ''}`.trim() || 'Athlete profile'
+  const athleteName = `${fields['First Name'] || ''} ${fields['Last Name'] || ''}`.trim() || 'Athlete profile'
 
   return (
     <main>
@@ -33,8 +33,8 @@ export default async function ProfilePage({ params }) {
             <p className="eyebrow">Basketball player profile</p>
             <h1>{athleteName}</h1>
             <div className="profileMeta">
-              <span>{fields.Sport || 'Sport pending'} | {fields.Position || 'Position pending'}</span>
-              <span>{fields['Current School'] || 'School pending'} | Class of {fields['Graduation Year'] || 'TBD'}</span>
+              <span>{fields.Sport || 'Sport pending'}</span>
+              <span>{fields.Email || 'Email pending'} | {fields.Phone || 'Phone pending'}</span>
             </div>
           </div>
         </div>
@@ -47,16 +47,16 @@ export default async function ProfilePage({ params }) {
         ) : (
           <div className="profileGrid">
             <article className="profilePanel">
-              <strong>Measurements</strong>
-              <p>Height: {fields.Height || 'TBD'}</p>
-              <p>Weight: {fields.Weight || 'TBD'}</p>
-              <p>Wingspan: {fields.Wingspan || 'TBD'}</p>
+              <strong>Contact</strong>
+              <p>Email: {fields.Email || 'TBD'}</p>
+              <p>Phone: {fields.Phone || 'TBD'}</p>
+              <p>Date of Birth: {fields['Date of Birth'] || 'TBD'}</p>
             </article>
             <article className="profilePanel">
-              <strong>Academics</strong>
-              <p>GPA: {fields.GPA || 'TBD'}</p>
-              <p>SAT: {fields['SAT Score'] || 'TBD'}</p>
-              <p>Location: {fields['City/Province'] || 'TBD'}</p>
+              <strong>Recruiting</strong>
+              <p>Sport: {fields.Sport || 'TBD'}</p>
+              <p>First Name: {fields['First Name'] || 'TBD'}</p>
+              <p>Last Name: {fields['Last Name'] || 'TBD'}</p>
             </article>
             <article className="profilePanel">
               <strong>Status</strong>
@@ -64,12 +64,8 @@ export default async function ProfilePage({ params }) {
               <p>Profile ID: {id}</p>
             </article>
             <article className="profilePanel wide">
-              <strong>Bio</strong>
-              <p>{fields.Bio || 'Bio pending.'}</p>
-            </article>
-            <article className="profilePanel wide">
-              <strong>Strengths</strong>
-              <p>{fields.Strengths || 'Strengths pending.'}</p>
+              <strong>Profile note</strong>
+              <p>This public profile currently reflects the fields available in the Athlete Intake table.</p>
             </article>
           </div>
         )}

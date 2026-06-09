@@ -10,21 +10,27 @@ Table ID:
 
 `tblZwrZHi3WBR3NHZ`
 
-## Athlete Record Fields
+## Current Athlete Intake Fields
 
-The application currently maps submissions into Airtable fields through `src/lib/integrations.js`.
-
-Recommended Airtable fields:
+The current CPR Airtable table accepts only these fields from the application:
 
 | Field Name | Type | Notes |
 | --- | --- | --- |
-| Athlete Name | Single line text | Combined first and last name |
 | First Name | Single line text | Required |
 | Last Name | Single line text | Required |
 | Email | Email | Required |
 | Phone | Phone | Required |
 | Date of Birth | Date | Required |
 | Sport | Single line text or select | Required |
+
+The application maps these fields through `normalizeAirtableApplicant()` in `src/lib/integrations.js`.
+
+## Future Recommended Fields
+
+These fields are useful for the full CPR workflow, but they should not be sent to Airtable until they exist in the table:
+
+| Field Name | Type | Notes |
+| --- | --- | --- |
 | Position | Single line text | Required |
 | Height | Single line text | Example: 6'2" |
 | Weight | Single line text | Example: 175lbs |
@@ -55,4 +61,4 @@ Recommended Airtable fields:
 
 - Current upload fields store file names only. A storage provider should be added before production file hosting is expected.
 - Airtable field names must match the app mapping exactly unless the code is updated.
-- Status updates are patched through `/api/admin/status`.
+- Status updates are currently not written to Airtable because the current table does not include a `Status` field.

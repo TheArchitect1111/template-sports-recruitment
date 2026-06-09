@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import {
   createAirtableRecord,
+  normalizeAirtableApplicant,
   normalizeApplicant,
   notifyMake,
   sendConfirmationEmail
@@ -25,8 +26,9 @@ export async function POST(request) {
     }
 
     const fields = normalizeApplicant(payload)
+    const airtableFields = normalizeAirtableApplicant(payload)
     const results = await Promise.allSettled([
-      createAirtableRecord(fields),
+      createAirtableRecord(airtableFields),
       notifyMake(fields),
       sendConfirmationEmail(fields)
     ])

@@ -5,6 +5,10 @@ import { useMemo, useState } from 'react'
 
 const statuses = ['New', 'Reviewing', 'Contacted', 'Placed', 'Closed']
 
+function getAthleteName(fields) {
+  return `${fields['First Name'] || ''} ${fields['Last Name'] || ''}`.trim() || 'Unnamed athlete'
+}
+
 export default function AdminPage() {
   const [password, setPassword] = useState('')
   const [records, setRecords] = useState([])
@@ -24,8 +28,8 @@ export default function AdminPage() {
 
     return records.filter((record) => {
       const fields = record.fields
-      const athleteName = fields['Athlete Name'] || ''
-      const matchesSearch = !term || [athleteName, fields.Email, fields.Position, fields['Current School']]
+      const athleteName = getAthleteName(fields)
+      const matchesSearch = !term || [athleteName, fields.Email, fields.Sport]
         .filter(Boolean)
         .some((value) => String(value).toLowerCase().includes(term))
       const matchesSport = sportFilter === 'All' || fields.Sport === sportFilter
@@ -142,9 +146,9 @@ export default function AdminPage() {
               <tr>
                 <th>Athlete</th>
                 <th>Sport</th>
-                <th>School</th>
-                <th>Grad</th>
-                <th>Parent</th>
+                <th>Email</th>
+                <th>Phone</th>
+                <th>Date of Birth</th>
                 <th>Status</th>
               </tr>
             </thead>
@@ -156,13 +160,13 @@ export default function AdminPage() {
                 return (
                   <tr key={record.id}>
                     <td>
-                      <Link href={`/profile/${record.id}`}>{fields['Athlete Name'] || 'Unnamed athlete'}</Link>
+                      <Link href={`/profile/${record.id}`}>{getAthleteName(fields)}</Link>
                       <div>{fields.Email || 'No email'}</div>
                     </td>
-                    <td>{fields.Sport || 'TBD'} | {fields.Position || 'TBD'}</td>
-                    <td>{fields['Current School'] || 'TBD'}</td>
-                    <td>{fields['Graduation Year'] || 'TBD'}</td>
-                    <td>{fields['Parent Name'] || 'TBD'}</td>
+                    <td>{fields.Sport || 'TBD'}</td>
+                    <td>{fields.Email || 'TBD'}</td>
+                    <td>{fields.Phone || 'TBD'}</td>
+                    <td>{fields['Date of Birth'] || 'TBD'}</td>
                     <td>
                       <div className="statusControl">
                         <span className="statusPill">{status}</span>
