@@ -129,17 +129,21 @@ export async function notifyMake(fields) {
     return { skipped: true }
   }
 
-  const response = await fetch(process.env.MAKE_WEBHOOK_URL, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(fields)
-  })
+  try {
+    const response = await fetch(process.env.MAKE_WEBHOOK_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(fields)
+    })
 
-  if (!response.ok) {
-    throw new Error('Make webhook failed')
+    if (!response.ok) {
+      return { skipped: false, ok: false, status: response.status, error: 'Make webhook failed' }
+    }
+
+    return { skipped: false, ok: true }
+  } catch (error) {
+    return { skipped: false, ok: false, error: error.message || 'Make webhook failed' }
   }
-
-  return { skipped: false }
 }
 
 export async function sendConfirmationEmail(fields) {
@@ -148,28 +152,32 @@ export async function sendConfirmationEmail(fields) {
     return { skipped: true }
   }
 
-  const response = await fetch('https://api.resend.com/emails', {
-    method: 'POST',
-    headers: {
-      Authorization: `Bearer ${apiKey}`,
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify({
-      from: 'Canadian Prospects <onboarding@resend.dev>',
-      to: [fields.Email],
-      subject: 'Canadian Prospects application received',
-      html: `
-        <p>Hi ${fields['First Name'] || 'there'},</p>
-        <p>Your Canadian Prospects Recruitment application has been received.</p>
-        <p>Our team will review your profile, film, academics, and fee agreement details.</p>
-      `
+  try {
+    const response = await fetch('https://api.resend.com/emails', {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${apiKey}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        from: 'Canadian Prospects <onboarding@resend.dev>',
+        to: [fields.Email],
+        subject: 'Canadian Prospects application received',
+        html: `
+          <p>Hi ${fields['First Name'] || 'there'},</p>
+          <p>Your Canadian Prospects Recruitment application has been received.</p>
+          <p>Our team will review your profile, film, academics, and fee agreement details.</p>
+        `
+      })
     })
-  })
 
-  const body = await response.json().catch(() => ({}))
-  if (!response.ok) {
-    throw new Error(body.message || 'Resend email failed')
+    const body = await response.json().catch(() => ({}))
+    if (!response.ok) {
+      return { skipped: false, ok: false, status: response.status, error: body.message || 'Resend email failed' }
+    }
+
+    return { skipped: false, ok: true, id: body.id }
+  } catch (error) {
+    return { skipped: false, ok: false, error: error.message || 'Resend email failed' }
   }
-
-  return { skipped: false, id: body.id }
 }

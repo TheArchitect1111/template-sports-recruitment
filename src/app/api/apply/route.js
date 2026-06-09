@@ -27,19 +27,17 @@ export async function POST(request) {
 
     const fields = normalizeApplicant(payload)
     const airtableFields = normalizeAirtableApplicant(payload)
-    const results = await Promise.allSettled([
-      createAirtableRecord(airtableFields),
-      notifyMake(fields),
-      sendConfirmationEmail(fields)
-    ])
+    const airtableResult = await createAirtableRecord(airtableFields)
+    const results = await Promise.allSettled([notifyMake(fields), sendConfirmationEmail(fields)])
 
-    const failed = results.find((result) => result.status === 'rejected')
-    if (failed) {
-      return NextResponse.json({ error: failed.reason.message }, { status: 502 })
-    }
-
-    const integrations = results.map((result) => result.value)
-    const airtableResult = integrations.find((result) => Object.hasOwn(result, 'id'))
+    const integrations = [
+      { airtable: airtableResult },
+      ...results.map((result) =>
+        result.status === 'fulfilled'
+          ? result.value
+          : { skipped: false, ok: false, error: result.reason?.message || 'Integration failed' }
+      )
+    ]
 
     return NextResponse.json({
       success: true,
