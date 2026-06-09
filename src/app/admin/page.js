@@ -90,7 +90,10 @@ export default function AdminPage() {
       <header className="siteHeader">
         <Link className="brand" href="/">
           <span className="brandMark">CPR</span>
-          <span>Canadian Prospects Recruitment</span>
+          <span className="brandText">
+            <strong>CANADIAN PROSPECTS RECRUITMENT</strong>
+            <small>FINDING OPPORTUNITY. BUILDING FUTURES.</small>
+          </span>
         </Link>
         <nav className="topNav" aria-label="Main navigation">
           <Link href="/">Home</Link>

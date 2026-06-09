@@ -1,10 +1,10 @@
 import Link from 'next/link'
 
 const stats = [
-  ['200+', 'Athletes Placed'],
-  ['50+', 'University Partners'],
-  ['98%', 'Satisfaction Rate'],
-  ['10+', 'Years Experience']
+  ['500+', 'Athletes Assisted'],
+  ['1,000+', 'Coach Contacts Made'],
+  ['250+', 'Schools Reached'],
+  ['$25M+', 'in Scholarship Opportunities']
 ]
 
 const steps = [
@@ -39,7 +39,10 @@ export default function Home() {
       <header className="siteHeader">
         <Link className="brand" href="/">
           <span className="brandMark">CPR</span>
-          <span>Canadian Prospects Recruitment</span>
+          <span className="brandText">
+            <strong>CANADIAN PROSPECTS RECRUITMENT</strong>
+            <small>FINDING OPPORTUNITY. BUILDING FUTURES.</small>
+          </span>
         </Link>
         <nav className="topNav" aria-label="Main navigation">
           <Link href="/apply">Apply</Link>
@@ -51,7 +54,7 @@ export default function Home() {
 
       <section className="homeHero">
         <div className="heroCopyBlock">
-          <p className="eyebrow">Canada to campus pathway</p>
+          <p className="eyebrow">Basketball recruitment pathway</p>
           <h1>Canadian Prospects Recruitment</h1>
           <p className="heroCopy">
             A dark, direct recruitment platform for athletes ready to build a profile, verify fit, and connect with the right college programs.
@@ -62,14 +65,16 @@ export default function Home() {
           </div>
         </div>
 
-        <aside className="playerCard" aria-label="Featured player card">
+        <aside className="playerCard" aria-label="Featured basketball player card">
           <div className="cardHeader">
-            <span>Prospect card</span>
-            <strong>Elite evaluation</strong>
+            <span>Basketball prospect card</span>
+            <strong>Elite court evaluation</strong>
           </div>
-          <div className="playerAvatar">23</div>
+          <div className="basketballVisual">
+            <span>23</span>
+          </div>
           <h2>Jordan Blake</h2>
-          <p>6 ft 3 in guard, Class of 2027</p>
+          <p>6 ft 3 in point guard, Class of 2027</p>
           <div className="playerMetrics">
             <span><strong>3.8</strong> GPA</span>
             <span><strong>42%</strong> 3PT</span>
@@ -129,7 +134,9 @@ export default function Home() {
 
       <footer className="footer">
         <span>Canadian Prospects Recruitment</span>
-        <span>Built for athlete placement, coach outreach, and family clarity.</span>
+        <span>mmagicman3223@gmail.com</span>
+        <span>Instagram @prospects.ca</span>
+        <span>Mississauga Ontario</span>
       </footer>
     </main>
   )

@@ -1,7 +1,7 @@
 import './globals.css'
 
 export const metadata = {
-  title: 'Canadian Prospects Recruitment',
+  title: 'CANADIAN PROSPECTS RECRUITMENT',
   description: 'Recruitment intake and athlete profile system for Canadian Prospects Recruitment.'
 }
 

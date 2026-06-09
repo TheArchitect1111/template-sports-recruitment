@@ -14,7 +14,10 @@ export default async function ProfilePage({ params }) {
       <header className="siteHeader">
         <Link className="brand" href="/">
           <span className="brandMark">CPR</span>
-          <span>Canadian Prospects Recruitment</span>
+          <span className="brandText">
+            <strong>CANADIAN PROSPECTS RECRUITMENT</strong>
+            <small>FINDING OPPORTUNITY. BUILDING FUTURES.</small>
+          </span>
         </Link>
         <nav className="topNav" aria-label="Main navigation">
           <Link href="/">Home</Link>
@@ -27,7 +30,7 @@ export default async function ProfilePage({ params }) {
         <div className="profileHero">
           <div className="profileNumber">{fields['Jersey Number'] || 'CP'}</div>
           <div>
-            <p className="eyebrow">Player profile</p>
+            <p className="eyebrow">Basketball player profile</p>
             <h1>{athleteName}</h1>
             <div className="profileMeta">
               <span>{fields.Sport || 'Sport pending'} | {fields.Position || 'Position pending'}</span>

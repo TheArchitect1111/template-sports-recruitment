@@ -2,6 +2,11 @@
 
 A dark theme sports recruitment platform for Canadian Prospects Recruitment.
 
+Brand colors:
+
+- Primary red: `#CC0000`
+- Background black: `#0A0A0A`
+
 ## Pages
 
 - `/` landing page with navigation, hero, player card, five step process, stats, testimonials, CTA, and footer
@@ -27,7 +32,7 @@ AIRTABLE_TABLE_ID=tblZwrZHi3WBR3NHZ
 MAKE_WEBHOOK_URL=https://hook.us2.make.com/faigbglxfqhsmrjawbn01zlnum8aigpg
 RESEND_API_KEY=
 NEXT_PUBLIC_SITE_URL=https://prospects.ca
-ADMIN_PASSWORD=cpr2024
+ADMIN_PASSWORD=CPRAdmin2024
 ```
 
 ## Commands
