@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server'
+import { updateAthleteProfileFields } from '../../../lib/airtable'
 import {
   createAirtableRecord,
   normalizeAirtableApplicant,
@@ -28,10 +29,14 @@ export async function POST(request) {
     const fields = normalizeApplicant(payload)
     const airtableFields = normalizeAirtableApplicant(payload)
     const airtableResult = await createAirtableRecord(airtableFields)
-    const results = await Promise.allSettled([notifyMake(fields), sendConfirmationEmail(fields)])
+    const profileResult = airtableResult?.id
+      ? await updateAthleteProfileFields(airtableResult.id, payload)
+      : { skipped: true, reason: 'Airtable record was not created' }
+    const results = await Promise.allSettled([notifyMake({ ...fields, ...profileResult }), sendConfirmationEmail(fields)])
 
     const integrations = [
       { airtable: airtableResult },
+      { profile: profileResult },
       ...results.map((result) =>
         result.status === 'fulfilled'
           ? result.value
@@ -42,6 +47,8 @@ export async function POST(request) {
     return NextResponse.json({
       success: true,
       profileId: airtableResult?.id || null,
+      profileSlug: profileResult?.slug || null,
+      profileUrl: profileResult?.profileUrl || null,
       integrations
     })
   } catch (error) {

@@ -33,6 +33,13 @@ Approved Sport options:
 - Track
 - Other
 
+Phase 2 profile fields:
+
+| Field Name | Type | Notes |
+| --- | --- | --- |
+| Profile Slug | Single line text | Auto-generated from first and last name |
+| Profile URL | Single line text or URL | Auto-generated public profile URL |
+
 The application maps these fields through `normalizeAirtableApplicant()` in `src/lib/integrations.js`.
 
 ## Future Recommended Fields
@@ -77,3 +84,4 @@ These fields are useful for the full CPR workflow, but they should not be sent t
 - Status updates are currently not written to Airtable because the current table does not include a `Status` field.
 - Automation payloads normalize raw grade values. For example, `11` becomes `Grade 11` before being sent to Make.
 - Sport values are normalized before Airtable writes. For example, `basketball` becomes `Basketball`.
+- Phase 2 attempts to create and populate `Profile Slug` and `Profile URL` after a successful Airtable record creation.
