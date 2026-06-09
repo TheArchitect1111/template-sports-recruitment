@@ -6,7 +6,22 @@ export function getAirtableConfig() {
   return { apiKey, baseId, tableId }
 }
 
+function normalizeSchoolYear(value) {
+  const text = String(value || '').trim()
+  if (/^grade\s+\d{1,2}$/i.test(text)) {
+    return text.replace(/^grade/i, 'Grade')
+  }
+
+  if (/^\d{1,2}$/.test(text)) {
+    return `Grade ${text}`
+  }
+
+  return text
+}
+
 export function normalizeApplicant(payload) {
+  const schoolYear = normalizeSchoolYear(payload.graduationYear)
+
   return {
     'First Name': payload.firstName,
     'Last Name': payload.lastName,
@@ -21,7 +36,10 @@ export function normalizeApplicant(payload) {
     GPA: payload.gpa,
     'SAT Score': payload.satScore,
     'Current School': payload.currentSchool,
-    'Graduation Year': payload.graduationYear,
+    'Graduation Year': schoolYear,
+    Grade: schoolYear,
+    'School Year': schoolYear,
+    Classification: schoolYear,
     'City/Province': payload.cityProvince,
     'Parent Name': payload.parentName,
     'Parent Email': payload.parentEmail,

@@ -39,6 +39,9 @@ These fields are useful for the full CPR workflow, but they should not be sent t
 | SAT Score | Number or single line text | Optional |
 | Current School | Single line text | Required |
 | Graduation Year | Single line text | Required |
+| Grade | Single select or text | Use values like `Grade 11`, not raw `11` |
+| School Year | Single select or text | Use values like `Grade 11`, not raw `11` |
+| Classification | Single select or text | Use values like `Grade 11`, not raw `11` |
 | City/Province | Single line text | Required |
 | Parent Name | Single line text | Required |
 | Parent Email | Email | Required |
@@ -62,3 +65,4 @@ These fields are useful for the full CPR workflow, but they should not be sent t
 - Current upload fields store file names only. A storage provider should be added before production file hosting is expected.
 - Airtable field names must match the app mapping exactly unless the code is updated.
 - Status updates are currently not written to Airtable because the current table does not include a `Status` field.
+- Automation payloads normalize raw grade values. For example, `11` becomes `Grade 11` before being sent to Make.
