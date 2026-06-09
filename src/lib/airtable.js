@@ -1,5 +1,6 @@
 const PROFILE_SLUG_FIELD = 'Profile Slug'
 const PROFILE_URL_FIELD = 'Profile URL'
+const PUBLIC_FIELD = 'Public'
 const PROFILE_SITE_URL = process.env.PROFILE_SITE_URL || 'https://template-sports-recruitment.vercel.app'
 
 export function getAirtableConfig() {
@@ -45,7 +46,11 @@ async function airtableRequest(path, options = {}, query = '') {
 
   const body = await response.json().catch(() => ({}))
   if (!response.ok) {
-    throw new Error(body.error?.message || 'Airtable request failed')
+    const error = new Error(body.error?.message || 'Airtable request failed')
+    error.status = response.status
+    error.code = body.error?.type
+    error.airtableBody = body
+    throw error
   }
 
   return body
@@ -69,22 +74,55 @@ async function airtableMetaRequest(path, options = {}) {
 
   const body = await response.json().catch(() => ({}))
   if (!response.ok) {
-    throw new Error(body.error?.message || 'Airtable metadata request failed')
+    const error = new Error(body.error?.message || 'Airtable metadata request failed')
+    error.status = response.status
+    error.code = body.error?.type
+    error.airtableBody = body
+    throw error
   }
 
   return body
 }
 
+function isAirtableNotFound(error) {
+  return error?.status === 404 || error?.code === 'MODEL_ID_NOT_FOUND'
+}
+
+function escapeFormulaValue(value) {
+  return String(value).replace(/\\/g, '\\\\').replace(/'/g, "\\'")
+}
+
 export async function getAthleteById(id) {
-  const record = await airtableRequest(`/${id}`)
-  return normalizeAthleteRecord(record)
+  try {
+    const record = await airtableRequest(`/${id}`)
+    return normalizeAthleteRecord(record)
+  } catch (error) {
+    if (isAirtableNotFound(error)) {
+      return null
+    }
+
+    throw error
+  }
 }
 
 export async function getAthleteBySlug(slug) {
-  const formula = encodeURIComponent(`{${PROFILE_SLUG_FIELD}} = '${String(slug).replace(/'/g, "\\'")}'`)
-  const result = await airtableRequest('', {}, `?maxRecords=1&filterByFormula=${formula}`)
-  const record = result.records?.[0]
-  return record ? normalizeAthleteRecord(record) : null
+  const cleanSlug = String(slug || '').trim().toLowerCase()
+  const formula = encodeURIComponent(`LOWER({${PROFILE_SLUG_FIELD}}) = '${escapeFormulaValue(cleanSlug)}'`)
+
+  try {
+    const result = await airtableRequest('', {}, `?maxRecords=1&filterByFormula=${formula}`)
+    const record = result.records?.[0]
+    if (record) {
+      return normalizeAthleteRecord(record)
+    }
+  } catch (error) {
+    if (!/Unknown field name/i.test(error.message || '')) {
+      throw error
+    }
+  }
+
+  const athletes = await getAllAthletes()
+  return athletes.find((athlete) => athlete.slug === cleanSlug) || null
 }
 
 export async function getAllAthletes() {
@@ -112,50 +150,99 @@ export async function ensureProfileFields() {
   const existingFields = new Set((table.fields || []).map((field) => field.name))
   const created = []
 
-  for (const fieldName of [PROFILE_SLUG_FIELD, PROFILE_URL_FIELD]) {
-    if (!existingFields.has(fieldName)) {
+  const requiredFields = [
+    { name: PROFILE_SLUG_FIELD, type: 'singleLineText' },
+    { name: PROFILE_URL_FIELD, type: 'url' },
+    { name: PUBLIC_FIELD, type: 'checkbox', options: { icon: 'check', color: 'greenBright' } }
+  ]
+
+  for (const field of requiredFields) {
+    if (!existingFields.has(field.name)) {
+      const body = {
+        name: field.name,
+        type: field.type
+      }
+
+      if (field.options) {
+        body.options = field.options
+      }
+
       await airtableMetaRequest(`/tables/${table.id}/fields`, {
         method: 'POST',
-        body: JSON.stringify({
-          name: fieldName,
-          type: 'singleLineText'
-        })
+        body: JSON.stringify(body)
       })
-      created.push(fieldName)
+      created.push(field.name)
     }
   }
 
   return { skipped: false, created }
 }
 
+async function patchAthleteProfileFields(recordId, fields) {
+  const record = await airtableRequest(`/${recordId}`, {
+    method: 'PATCH',
+    body: JSON.stringify({ fields })
+  })
+
+  return record
+}
+
+function isUnknownFieldError(error) {
+  return /Unknown field name/i.test(error?.message || '')
+}
+
 export async function updateAthleteProfileFields(recordId, payload) {
   const slug = createAthleteSlug(payload.firstName, payload.lastName, recordId)
   const profileUrl = createProfileUrl(slug)
+  const profileFields = {
+    [PROFILE_SLUG_FIELD]: slug,
+    [PROFILE_URL_FIELD]: profileUrl,
+    [PUBLIC_FIELD]: true
+  }
 
   try {
-    await ensureProfileFields()
-    const record = await airtableRequest(`/${recordId}`, {
-      method: 'PATCH',
-      body: JSON.stringify({
-        fields: {
-          [PROFILE_SLUG_FIELD]: slug,
-          [PROFILE_URL_FIELD]: profileUrl
-        }
-      })
-    })
-
+    const record = await patchAthleteProfileFields(recordId, profileFields)
     return {
       skipped: false,
       id: record.id,
       slug,
       profileUrl
     }
-  } catch (error) {
-    return {
-      skipped: true,
-      reason: error.message,
-      slug,
-      profileUrl
+  } catch (firstError) {
+    try {
+      if (isUnknownFieldError(firstError)) {
+        await ensureProfileFields()
+      }
+
+      const record = await patchAthleteProfileFields(recordId, profileFields)
+      return {
+        skipped: false,
+        id: record.id,
+        slug,
+        profileUrl
+      }
+    } catch (secondError) {
+      try {
+        const record = await patchAthleteProfileFields(recordId, {
+          [PROFILE_SLUG_FIELD]: slug,
+          [PROFILE_URL_FIELD]: profileUrl
+        })
+        return {
+          skipped: false,
+          id: record.id,
+          slug,
+          profileUrl,
+          publicSkipped: true,
+          publicReason: secondError.message
+        }
+      } catch (thirdError) {
+        return {
+          skipped: true,
+          reason: thirdError.message,
+          slug,
+          profileUrl
+        }
+      }
     }
   }
 }

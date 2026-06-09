@@ -25,7 +25,7 @@ export async function generateMetadata({ params }) {
 
 export default async function AthletePage({ params }) {
   const { id } = await params
-  const athlete = await getAthleteByIdOrSlug(id).catch(() => null)
+  const athlete = await getAthleteByIdOrSlug(id)
 
   if (!athlete) {
     notFound()
