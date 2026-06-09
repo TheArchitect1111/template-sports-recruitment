@@ -1,43 +1,36 @@
-import { notFound } from 'next/navigation'
+import Link from 'next/link'
 import AthleteProfileCard from '../../../components/athlete/AthleteProfileCard'
-import { createProfileUrl, getAthleteByIdOrSlug } from '../../../lib/airtable'
+import { createProfileUrl, getAirtableConfig, getAthleteByIdOrSlug } from '../../../lib/airtable'
 
 export const dynamic = 'force-dynamic'
 
-function isAirtableAccessError(error) {
-  return error?.status === 403 || error?.code === 'INVALID_PERMISSIONS_OR_MODEL_NOT_FOUND'
+function hasAirtableEnvironment() {
+  const { apiKey, baseId } = getAirtableConfig()
+  return Boolean(apiKey && baseId)
 }
 
-function createFallbackAthlete(id) {
-  const nameFromSlug = /^rec[a-zA-Z0-9]+$/.test(id)
-    ? 'Not Provided'
-    : id
-        .split('-')
-        .filter(Boolean)
-        .map((part) => `${part.charAt(0).toUpperCase()}${part.slice(1)}`)
-        .join(' ')
-
+function createSampleAthlete(id) {
   return {
     id,
     slug: id,
     profileUrl: createProfileUrl(id),
     fields: {},
-    name: nameFromSlug || 'Not Provided',
-    sport: 'Not Provided',
+    name: 'Sample Athlete',
+    sport: 'Basketball',
     phone: 'Not Provided',
     dateOfBirth: 'Not Provided',
-    position: 'Not Provided',
-    gradYear: 'Not Provided',
-    school: 'Not Provided',
-    cityProvince: 'Not Provided',
+    position: 'Guard',
+    gradYear: '2026',
+    school: 'Canadian Prospects Recruitment',
+    cityProvince: 'Mississauga, Ontario',
     photoUrl: '',
-    height: 'Not Provided',
-    weight: 'Not Provided',
+    height: '6 ft 2 in',
+    weight: '175 lbs',
     wingspan: 'Not Provided',
-    gpa: 'Not Provided',
+    gpa: '3.8',
     testScore: 'Not Provided',
-    bio: 'Not Provided',
-    strengths: 'Not Provided',
+    bio: 'Sample profile shown because Airtable environment variables are not configured.',
+    strengths: 'Profile data will appear here once Airtable is configured.',
     videoUrl: '',
     transcriptUrl: '',
     evaluationUrl: '',
@@ -47,15 +40,28 @@ function createFallbackAthlete(id) {
 }
 
 async function getAthleteForPage(id) {
+  if (!hasAirtableEnvironment()) {
+    return createSampleAthlete(id)
+  }
+
   try {
     return await getAthleteByIdOrSlug(id)
   } catch (error) {
-    if (isAirtableAccessError(error)) {
-      return createFallbackAthlete(id)
-    }
-
-    throw error
+    return null
   }
+}
+
+function ProfileNotFound() {
+  return (
+    <main className="athletePage athleteNotFound">
+      <section className="athleteSection">
+        <p className="eyebrow">Profile not found</p>
+        <h1>Athlete profile unavailable.</h1>
+        <p>The requested athlete profile does not exist or is not available for public viewing.</p>
+        <Link className="primaryAction" href="/apply">Apply Now</Link>
+      </section>
+    </main>
+  )
 }
 
 export async function generateMetadata({ params }) {
@@ -87,7 +93,7 @@ export default async function AthletePage({ params }) {
   const athlete = await getAthleteForPage(id)
 
   if (!athlete) {
-    notFound()
+    return <ProfileNotFound />
   }
 
   return (
