@@ -245,8 +245,10 @@ function getUnknownFieldName(error) {
 }
 
 function getInvalidValueFieldName(error) {
-  const match = String(error?.message || '').match(/Field "([^"]+)" cannot accept the provided value/i)
-  return match?.[1] || ''
+  const message = String(error?.message || '')
+  const quotedMatch = message.match(/Field "([^"]+)" cannot accept the provided value/i)
+  const attachmentMatch = message.match(/Invalid attachment for field ([^:]+):/i)
+  return quotedMatch?.[1] || attachmentMatch?.[1] || ''
 }
 
 function getRetryableFieldName(error) {
