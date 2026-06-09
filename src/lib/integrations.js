@@ -19,8 +19,17 @@ function normalizeSchoolYear(value) {
   return text
 }
 
+const sportOptions = ['Basketball', 'Football', 'Baseball', 'Soccer', 'Volleyball', 'Track', 'Other']
+
+function normalizeSport(value) {
+  const text = String(value || '').trim()
+  const match = sportOptions.find((sport) => sport.toLowerCase() === text.toLowerCase())
+  return match || 'Other'
+}
+
 export function normalizeApplicant(payload) {
   const schoolYear = normalizeSchoolYear(payload.graduationYear)
+  const sport = normalizeSport(payload.sport)
 
   return {
     'First Name': payload.firstName,
@@ -28,7 +37,7 @@ export function normalizeApplicant(payload) {
     Email: payload.email,
     Phone: payload.phone,
     'Date of Birth': payload.dateOfBirth,
-    Sport: payload.sport,
+    Sport: sport,
     Position: payload.position,
     Height: payload.height,
     Weight: payload.weight,
@@ -61,13 +70,15 @@ export function normalizeApplicant(payload) {
 }
 
 export function normalizeAirtableApplicant(payload) {
+  const sport = normalizeSport(payload.sport)
+
   return {
     'First Name': payload.firstName,
     'Last Name': payload.lastName,
     Email: payload.email,
     Phone: payload.phone,
     'Date of Birth': payload.dateOfBirth,
-    Sport: payload.sport
+    Sport: sport
   }
 }
 

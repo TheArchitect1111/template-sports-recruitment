@@ -34,13 +34,14 @@ const initialForm = {
   digitalSignature: ''
 }
 
+const sportOptions = ['Basketball', 'Football', 'Baseball', 'Soccer', 'Volleyball', 'Track', 'Other']
+
 const textFields = [
   ['firstName', 'First name', 'text', true],
   ['lastName', 'Last name', 'text', true],
   ['email', 'Email', 'email', true],
   ['phone', 'Phone', 'tel', true],
   ['dateOfBirth', 'Date of birth', 'date', true],
-  ['sport', 'Sport', 'text', true],
   ['position', 'Position', 'text', true],
   ['height', 'Height', 'text', false],
   ['weight', 'Weight', 'text', false],
@@ -138,6 +139,16 @@ export default function ApplyPage() {
                   />
                 </label>
               ))}
+
+              <label>
+                Sport
+                <select name="sport" value={form.sport} onChange={updateField} required>
+                  <option value="">Select sport</option>
+                  {sportOptions.map((sport) => (
+                    <option key={sport} value={sport}>{sport}</option>
+                  ))}
+                </select>
+              </label>
 
               <label className="wide">
                 Bio

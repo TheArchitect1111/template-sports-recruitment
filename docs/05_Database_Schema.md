@@ -21,7 +21,17 @@ The current CPR Airtable table accepts only these fields from the application:
 | Email | Email | Required |
 | Phone | Phone | Required |
 | Date of Birth | Date | Required |
-| Sport | Single line text or select | Required |
+| Sport | Single select | Must match one of the approved Sport options |
+
+Approved Sport options:
+
+- Basketball
+- Football
+- Baseball
+- Soccer
+- Volleyball
+- Track
+- Other
 
 The application maps these fields through `normalizeAirtableApplicant()` in `src/lib/integrations.js`.
 
@@ -66,3 +76,4 @@ These fields are useful for the full CPR workflow, but they should not be sent t
 - Airtable field names must match the app mapping exactly unless the code is updated.
 - Status updates are currently not written to Airtable because the current table does not include a `Status` field.
 - Automation payloads normalize raw grade values. For example, `11` becomes `Grade 11` before being sent to Make.
+- Sport values are normalized before Airtable writes. For example, `basketball` becomes `Basketball`.
