@@ -10,9 +10,16 @@ export async function POST(request) {
   try {
     const payload = await request.json()
 
-    if (!payload.athleteName || !payload.email || !payload.sport) {
+    if (!payload.firstName || !payload.lastName || !payload.email || !payload.sport) {
       return NextResponse.json(
-        { error: 'Athlete name, email, and sport are required' },
+        { error: 'First name, last name, email, and sport are required' },
+        { status: 400 }
+      )
+    }
+
+    if (!payload.paymentAgreement || !payload.termsAgreement || !payload.digitalSignature) {
+      return NextResponse.json(
+        { error: 'Fee agreement, terms agreement, and digital signature are required' },
         { status: 400 }
       )
     }
@@ -29,9 +36,13 @@ export async function POST(request) {
       return NextResponse.json({ error: failed.reason.message }, { status: 502 })
     }
 
+    const integrations = results.map((result) => result.value)
+    const airtableResult = integrations.find((result) => Object.hasOwn(result, 'id'))
+
     return NextResponse.json({
       success: true,
-      integrations: results.map((result) => result.value)
+      profileId: airtableResult?.id || null,
+      integrations
     })
   } catch (error) {
     return NextResponse.json({ error: error.message || 'Submission failed' }, { status: 500 })

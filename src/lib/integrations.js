@@ -7,72 +7,118 @@ export function getAirtableConfig() {
 }
 
 export function normalizeApplicant(payload) {
+  const athleteName = `${payload.firstName || ''} ${payload.lastName || ''}`.trim()
+
   return {
-    'Athlete Name': payload.athleteName,
-    'Parent Name': payload.parentName,
+    'Athlete Name': athleteName,
+    'First Name': payload.firstName,
+    'Last Name': payload.lastName,
     Email: payload.email,
     Phone: payload.phone,
+    'Date of Birth': payload.dateOfBirth,
     Sport: payload.sport,
     Position: payload.position,
-    'Graduation Year': payload.graduationYear,
-    City: payload.city,
-    Province: payload.province,
-    'Current Team': payload.currentTeam,
     Height: payload.height,
     Weight: payload.weight,
-    'GPA or Average': payload.gpa,
-    'Highlight URL': payload.highlightUrl,
-    Goals: payload.goals,
+    Wingspan: payload.wingspan,
+    GPA: payload.gpa,
+    'SAT Score': payload.satScore,
+    'Current School': payload.currentSchool,
+    'Graduation Year': payload.graduationYear,
+    'City/Province': payload.cityProvince,
+    'Parent Name': payload.parentName,
+    'Parent Email': payload.parentEmail,
+    'Parent Phone': payload.parentPhone,
+    Bio: payload.bio,
+    Strengths: payload.strengths,
+    'Highlight Video URL': payload.highlightVideoUrl,
+    'Photo Upload': payload.photoUpload,
+    'Transcript Upload': payload.transcriptUpload,
+    'Gameplay Video Upload': payload.gameplayVideoUpload,
+    'Fee Agreement': payload.paymentAgreement ? 'Acknowledged 3 payments of $500 each' : 'Not acknowledged',
+    'NIL Interest': payload.nilInterest ? 'Yes' : 'No',
+    'Terms Agreement': payload.termsAgreement ? 'Agreed' : 'Not agreed',
+    'Digital Signature': payload.digitalSignature,
+    Status: 'New',
     Source: 'Canadian Prospects Recruitment',
     'Submitted At': new Date().toISOString()
   }
 }
 
-export async function createAirtableRecord(fields) {
-  const { apiKey, baseId, tableId } = getAirtableConfig()
-  if (!apiKey || !baseId || !tableId) {
-    return { skipped: true, reason: 'Airtable credentials are incomplete' }
-  }
-
-  const response = await fetch(`https://api.airtable.com/v0/${baseId}/${encodeURIComponent(tableId)}`, {
-    method: 'POST',
-    headers: {
-      Authorization: `Bearer ${apiKey}`,
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify({ fields })
-  })
-
-  const body = await response.json().catch(() => ({}))
-  if (!response.ok) {
-    throw new Error(body.error?.message || 'Airtable submission failed')
-  }
-
-  return { skipped: false, id: body.id }
+function getAirtableUrl(path = '', query = '') {
+  const { baseId, tableId } = getAirtableConfig()
+  return `https://api.airtable.com/v0/${baseId}/${encodeURIComponent(tableId)}${path}${query}`
 }
 
-export async function listAirtableRecords() {
+async function airtableFetch(path, options = {}, query = '') {
   const { apiKey, baseId, tableId } = getAirtableConfig()
   if (!apiKey || !baseId || !tableId) {
     return { skipped: true, records: [] }
   }
 
-  const response = await fetch(
-    `https://api.airtable.com/v0/${baseId}/${encodeURIComponent(tableId)}?maxRecords=25&sort%5B0%5D%5Bfield%5D=Submitted%20At&sort%5B0%5D%5Bdirection%5D=desc`,
-    {
-      headers: {
-        Authorization: `Bearer ${apiKey}`
-      },
-      cache: 'no-store'
-    }
-  )
+  const response = await fetch(getAirtableUrl(path, query), {
+    ...options,
+    headers: {
+      Authorization: `Bearer ${apiKey}`,
+      'Content-Type': 'application/json',
+      ...options.headers
+    },
+    cache: options.cache || 'no-store'
+  })
 
   const body = await response.json().catch(() => ({}))
   if (!response.ok) {
-    throw new Error(body.error?.message || 'Unable to load Airtable records')
+    throw new Error(body.error?.message || 'Airtable request failed')
   }
 
-  return { skipped: false, records: body.records || [] }
+  return body
+}
+
+export async function createAirtableRecord(fields) {
+  const result = await airtableFetch('', {
+    method: 'POST',
+    body: JSON.stringify({ fields })
+  })
+
+  if (result.skipped) {
+    return { skipped: true, reason: 'Airtable credentials are incomplete' }
+  }
+
+  return { skipped: false, id: result.id }
+}
+
+export async function listAirtableRecords() {
+  const query = '?maxRecords=100&sort%5B0%5D%5Bfield%5D=Submitted%20At&sort%5B0%5D%5Bdirection%5D=desc'
+  const result = await airtableFetch('', {}, query)
+
+  if (result.skipped) {
+    return { skipped: true, records: [] }
+  }
+
+  return { skipped: false, records: result.records || [] }
+}
+
+export async function getAirtableRecord(id) {
+  const result = await airtableFetch(`/${id}`)
+
+  if (result.skipped) {
+    return { skipped: true, record: null }
+  }
+
+  return { skipped: false, record: result }
+}
+
+export async function updateAirtableStatus(id, status) {
+  const result = await airtableFetch(`/${id}`, {
+    method: 'PATCH',
+    body: JSON.stringify({ fields: { Status: status } })
+  })
+
+  if (result.skipped) {
+    return { skipped: true, record: null }
+  }
+
+  return { skipped: false, record: result }
 }
 
 export async function notifyMake(fields) {
@@ -108,11 +154,11 @@ export async function sendConfirmationEmail(fields) {
     body: JSON.stringify({
       from: 'Canadian Prospects <onboarding@resend.dev>',
       to: [fields.Email],
-      subject: 'Canadian Prospects profile received',
+      subject: 'Canadian Prospects application received',
       html: `
-        <p>Hi ${fields['Athlete Name'] || 'there'},</p>
-        <p>Your Canadian Prospects Recruitment profile has been received.</p>
-        <p>Our team will review the details and follow up with next steps.</p>
+        <p>Hi ${fields['First Name'] || 'there'},</p>
+        <p>Your Canadian Prospects Recruitment application has been received.</p>
+        <p>Our team will review your profile, film, academics, and fee agreement details.</p>
       `
     })
   })

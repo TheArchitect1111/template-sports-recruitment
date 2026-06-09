@@ -1,179 +1,136 @@
-'use client'
+import Link from 'next/link'
 
-import { useState } from 'react'
+const stats = [
+  ['200+', 'Athletes Placed'],
+  ['50+', 'University Partners'],
+  ['98%', 'Satisfaction Rate'],
+  ['10+', 'Years Experience']
+]
 
-const initialForm = {
-  athleteName: '',
-  parentName: '',
-  email: '',
-  phone: '',
-  sport: '',
-  position: '',
-  graduationYear: '',
-  city: '',
-  province: '',
-  currentTeam: '',
-  height: '',
-  weight: '',
-  gpa: '',
-  highlightUrl: '',
-  goals: ''
-}
+const steps = [
+  ['01', 'Apply', 'Submit your athletic, academic, and family contact profile.'],
+  ['02', 'Evaluate', 'Our recruiting team reviews fit, film, grades, and readiness.'],
+  ['03', 'Position', 'We shape your player card, profile, and outreach plan.'],
+  ['04', 'Connect', 'Qualified athletes are introduced to aligned college programs.'],
+  ['05', 'Commit', 'Families receive guidance through offers, visits, and next steps.']
+]
+
+const testimonials = [
+  {
+    quote: 'Canadian Prospects helped us understand the recruiting process and gave my son a clear plan.',
+    name: 'Marcus R.',
+    role: 'Parent of 2025 guard'
+  },
+  {
+    quote: 'The profile, film notes, and coach outreach made a real difference in my recruitment.',
+    name: 'Aaliyah M.',
+    role: 'Placed athlete'
+  },
+  {
+    quote: 'They bring organized information, reliable athletes, and families who are prepared.',
+    name: 'Coach D.',
+    role: 'University partner'
+  }
+]
 
 export default function Home() {
-  const [form, setForm] = useState(initialForm)
-  const [status, setStatus] = useState('idle')
-  const [message, setMessage] = useState('')
-
-  const updateField = (event) => {
-    const { name, value } = event.target
-    setForm((current) => ({ ...current, [name]: value }))
-  }
-
-  const submitForm = async (event) => {
-    event.preventDefault()
-    setStatus('loading')
-    setMessage('')
-
-    try {
-      const response = await fetch('/api/apply', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(form)
-      })
-
-      const result = await response.json()
-      if (!response.ok) {
-        throw new Error(result.error || 'Submission failed')
-      }
-
-      setStatus('success')
-      setMessage('Profile received. Our recruiting team will review it and follow up shortly.')
-      setForm(initialForm)
-    } catch (error) {
-      setStatus('error')
-      setMessage(error.message)
-    }
-  }
-
   return (
     <main>
-      <section className="hero">
-        <nav className="nav">
-          <div className="brand">
-            <span className="brandMark">CP</span>
-            <span>Canadian Prospects</span>
-          </div>
-          <a href="#apply" className="navButton">Apply</a>
+      <header className="siteHeader">
+        <Link className="brand" href="/">
+          <span className="brandMark">CPR</span>
+          <span>Canadian Prospects Recruitment</span>
+        </Link>
+        <nav className="topNav" aria-label="Main navigation">
+          <Link href="/apply">Apply</Link>
+          <a href="#process">Process</a>
+          <a href="#testimonials">Stories</a>
+          <Link href="/admin">Admin</Link>
         </nav>
+      </header>
 
-        <div className="heroContent">
-          <p className="eyebrow">Recruitment intake</p>
+      <section className="homeHero">
+        <div className="heroCopyBlock">
+          <p className="eyebrow">Canada to campus pathway</p>
           <h1>Canadian Prospects Recruitment</h1>
           <p className="heroCopy">
-            Build a complete athlete profile for evaluation, coach follow-up, and next-step placement.
+            A dark, direct recruitment platform for athletes ready to build a profile, verify fit, and connect with the right college programs.
           </p>
           <div className="heroActions">
-            <a href="#apply" className="primaryAction">Start profile</a>
-            <a href="/admin" className="secondaryAction">Admin</a>
+            <Link className="primaryAction" href="/apply">Start application</Link>
+            <a className="secondaryAction" href="#process">View process</a>
           </div>
         </div>
+
+        <aside className="playerCard" aria-label="Featured player card">
+          <div className="cardHeader">
+            <span>Prospect card</span>
+            <strong>Elite evaluation</strong>
+          </div>
+          <div className="playerAvatar">23</div>
+          <h2>Jordan Blake</h2>
+          <p>6 ft 3 in guard, Class of 2027</p>
+          <div className="playerMetrics">
+            <span><strong>3.8</strong> GPA</span>
+            <span><strong>42%</strong> 3PT</span>
+            <span><strong>ON</strong> Canada</span>
+          </div>
+        </aside>
       </section>
 
-      <section className="metrics" aria-label="Recruitment priorities">
-        <div>
-          <strong>01</strong>
-          <span>Academic fit</span>
-        </div>
-        <div>
-          <strong>02</strong>
-          <span>Athletic profile</span>
-        </div>
-        <div>
-          <strong>03</strong>
-          <span>Coach outreach</span>
-        </div>
-        <div>
-          <strong>04</strong>
-          <span>Placement plan</span>
-        </div>
+      <section className="statsBar" aria-label="Recruitment stats">
+        {stats.map(([value, label]) => (
+          <div key={label}>
+            <strong>{value}</strong>
+            <span>{label}</span>
+          </div>
+        ))}
       </section>
 
-      <section id="apply" className="application">
+      <section id="process" className="sectionBand">
         <div className="sectionIntro">
-          <p className="eyebrow">Athlete profile</p>
-          <h2>Tell us who we are recruiting.</h2>
+          <p className="eyebrow">5 step process</p>
+          <h2>From first profile to college conversation.</h2>
         </div>
-
-        <form onSubmit={submitForm} className="profileForm">
-          <label>
-            Athlete name
-            <input name="athleteName" value={form.athleteName} onChange={updateField} required />
-          </label>
-          <label>
-            Parent or guardian
-            <input name="parentName" value={form.parentName} onChange={updateField} />
-          </label>
-          <label>
-            Email
-            <input type="email" name="email" value={form.email} onChange={updateField} required />
-          </label>
-          <label>
-            Phone
-            <input name="phone" value={form.phone} onChange={updateField} />
-          </label>
-          <label>
-            Sport
-            <input name="sport" value={form.sport} onChange={updateField} required />
-          </label>
-          <label>
-            Position
-            <input name="position" value={form.position} onChange={updateField} />
-          </label>
-          <label>
-            Graduation year
-            <input name="graduationYear" value={form.graduationYear} onChange={updateField} />
-          </label>
-          <label>
-            City
-            <input name="city" value={form.city} onChange={updateField} />
-          </label>
-          <label>
-            Province
-            <input name="province" value={form.province} onChange={updateField} />
-          </label>
-          <label>
-            Current team
-            <input name="currentTeam" value={form.currentTeam} onChange={updateField} />
-          </label>
-          <label>
-            Height
-            <input name="height" value={form.height} onChange={updateField} />
-          </label>
-          <label>
-            Weight
-            <input name="weight" value={form.weight} onChange={updateField} />
-          </label>
-          <label>
-            GPA or average
-            <input name="gpa" value={form.gpa} onChange={updateField} />
-          </label>
-          <label>
-            Highlight video URL
-            <input type="url" name="highlightUrl" value={form.highlightUrl} onChange={updateField} />
-          </label>
-          <label className="wide">
-            Recruiting goals
-            <textarea name="goals" value={form.goals} onChange={updateField} rows="5" />
-          </label>
-
-          <button type="submit" disabled={status === 'loading'}>
-            {status === 'loading' ? 'Submitting...' : 'Submit profile'}
-          </button>
-
-          {message && <p className={`formMessage ${status}`}>{message}</p>}
-        </form>
+        <div className="processGrid">
+          {steps.map(([number, title, body]) => (
+            <article key={title} className="processStep">
+              <span>{number}</span>
+              <h3>{title}</h3>
+              <p>{body}</p>
+            </article>
+          ))}
+        </div>
       </section>
+
+      <section id="testimonials" className="sectionBand testimonials">
+        <div className="sectionIntro">
+          <p className="eyebrow">Testimonials</p>
+          <h2>Families, athletes, and coaches trust the system.</h2>
+        </div>
+        <div className="testimonialGrid">
+          {testimonials.map((item) => (
+            <article key={item.name} className="testimonialCard">
+              <p>{item.quote}</p>
+              <strong>{item.name}</strong>
+              <span>{item.role}</span>
+            </article>
+          ))}
+        </div>
+      </section>
+
+      <section className="ctaBand">
+        <div>
+          <p className="eyebrow">Ready for review</p>
+          <h2>Build your recruitment profile today.</h2>
+        </div>
+        <Link className="primaryAction" href="/apply">Apply now</Link>
+      </section>
+
+      <footer className="footer">
+        <span>Canadian Prospects Recruitment</span>
+        <span>Built for athlete placement, coach outreach, and family clarity.</span>
+      </footer>
     </main>
   )
 }

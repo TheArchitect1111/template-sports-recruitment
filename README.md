@@ -1,10 +1,24 @@
 # Canadian Prospects Recruitment
 
-A recruiting intake template for Canadian Prospects Recruitment. The app captures athlete profiles, sends submissions to Make, optionally writes directly to Airtable when an Airtable API key is configured, and can send confirmation email through Resend.
+A dark theme sports recruitment platform for Canadian Prospects Recruitment.
+
+## Pages
+
+- `/` landing page with navigation, hero, player card, five step process, stats, testimonials, CTA, and footer
+- `/apply` athlete profile and fee agreement application
+- `/profile/[id]` public player profile powered by Airtable
+- `/admin` password protected athlete table with filters and status management
+
+## Integrations
+
+- Form submissions post to `MAKE_WEBHOOK_URL`
+- Athlete data is written to Airtable
+- Admin reads and updates Airtable records
+- Resend sends an application confirmation when configured
 
 ## Environment
 
-Copy `.env.example` to `.env.local` and set any private credentials.
+Copy `.env.example` to `.env.local` and set private credentials.
 
 ```env
 AIRTABLE_API_KEY=
@@ -16,12 +30,11 @@ NEXT_PUBLIC_SITE_URL=https://prospects.ca
 ADMIN_PASSWORD=cpr2024
 ```
 
-`AIRTABLE_API_KEY` is optional for local testing. Without it, submissions still post to the Make webhook.
-
 ## Commands
 
 ```bash
 npm install
 npm run dev
+npm run lint
 npm run build
 ```
