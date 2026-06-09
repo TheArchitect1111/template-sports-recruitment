@@ -1,9 +1,10 @@
 export default function DocumentSection({ athlete }) {
+  const profile = athlete || {}
   const documents = [
-    ['Transcript', athlete.transcriptUrl],
-    ['Evaluation', athlete.evaluationUrl],
-    ['Additional Files', athlete.additionalFilesUrl]
-  ].filter(([, url]) => Boolean(url))
+    ['Transcript', profile.transcriptUrl],
+    ['Evaluation', profile.evaluationUrl],
+    ['Additional Files', profile.additionalFilesUrl]
+  ].filter(([, url]) => typeof url === 'string' && url.trim())
 
   return (
     <section className="athleteSection">
@@ -17,7 +18,7 @@ export default function DocumentSection({ athlete }) {
           ))}
         </div>
       ) : (
-        <p>No public documents have been added yet.</p>
+        <p>Not Provided</p>
       )}
     </section>
   )

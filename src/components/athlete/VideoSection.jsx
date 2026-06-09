@@ -1,5 +1,5 @@
 function getEmbedUrl(url) {
-  if (!url) return ''
+  if (!url || typeof url !== 'string') return ''
 
   try {
     const parsed = new URL(url)
@@ -20,6 +20,7 @@ function getEmbedUrl(url) {
 
 export default function VideoSection({ url }) {
   const embedUrl = getEmbedUrl(url)
+  const hasUrl = typeof url === 'string' && url.trim()
 
   return (
     <section className="athleteSection">
@@ -32,10 +33,10 @@ export default function VideoSection({ url }) {
           allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
           allowFullScreen
         />
-      ) : url ? (
+      ) : hasUrl ? (
         <a className="documentLink" href={url} target="_blank" rel="noreferrer">Open highlight video</a>
       ) : (
-        <p>No highlight video has been added yet.</p>
+        <p>Not Provided</p>
       )}
     </section>
   )

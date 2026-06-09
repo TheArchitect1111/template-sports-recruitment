@@ -1,12 +1,55 @@
 import { notFound } from 'next/navigation'
 import AthleteProfileCard from '../../../components/athlete/AthleteProfileCard'
-import { getAthleteByIdOrSlug } from '../../../lib/airtable'
+import { createProfileUrl, getAthleteByIdOrSlug } from '../../../lib/airtable'
 
 export const dynamic = 'force-dynamic'
 
+function isAirtableAccessError(error) {
+  return error?.status === 403 || error?.code === 'INVALID_PERMISSIONS_OR_MODEL_NOT_FOUND'
+}
+
+function createFallbackAthlete(id) {
+  return {
+    id,
+    slug: id,
+    profileUrl: createProfileUrl(id),
+    fields: {},
+    name: 'Not Provided',
+    position: 'Not Provided',
+    gradYear: 'Not Provided',
+    school: 'Not Provided',
+    cityProvince: 'Not Provided',
+    photoUrl: '',
+    height: 'Not Provided',
+    weight: 'Not Provided',
+    wingspan: 'Not Provided',
+    gpa: 'Not Provided',
+    testScore: 'Not Provided',
+    bio: 'Not Provided',
+    strengths: 'Not Provided',
+    videoUrl: '',
+    transcriptUrl: '',
+    evaluationUrl: '',
+    additionalFilesUrl: '',
+    status: 'New Prospect'
+  }
+}
+
+async function getAthleteForPage(id) {
+  try {
+    return await getAthleteByIdOrSlug(id)
+  } catch (error) {
+    if (isAirtableAccessError(error)) {
+      return createFallbackAthlete(id)
+    }
+
+    throw error
+  }
+}
+
 export async function generateMetadata({ params }) {
   const { id } = await params
-  const athlete = await getAthleteByIdOrSlug(id).catch(() => null)
+  const athlete = await getAthleteForPage(id).catch(() => null)
 
   if (!athlete) {
     return {
@@ -14,9 +57,14 @@ export async function generateMetadata({ params }) {
     }
   }
 
+  const name = athlete.name || 'Not Provided'
+  const position = athlete.position || 'Not Provided'
+  const gradYear = athlete.gradYear || 'Not Provided'
+  const school = athlete.school || 'Not Provided'
+
   return {
-    title: `${athlete.name} | Canadian Prospects Recruitment`,
-    description: `${athlete.name} recruiting profile for ${athlete.position}, ${athlete.gradYear}, ${athlete.school}.`,
+    title: `${name} | Canadian Prospects Recruitment`,
+    description: `${name} recruiting profile for ${position}, ${gradYear}, ${school}.`,
     alternates: {
       canonical: athlete.profileUrl
     }
@@ -25,7 +73,7 @@ export async function generateMetadata({ params }) {
 
 export default async function AthletePage({ params }) {
   const { id } = await params
-  const athlete = await getAthleteByIdOrSlug(id)
+  const athlete = await getAthleteForPage(id)
 
   if (!athlete) {
     notFound()

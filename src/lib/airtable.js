@@ -2,6 +2,7 @@ const PROFILE_SLUG_FIELD = 'Profile Slug'
 const PROFILE_URL_FIELD = 'Profile URL'
 const PUBLIC_FIELD = 'Public'
 const PROFILE_SITE_URL = process.env.PROFILE_SITE_URL || 'https://template-sports-recruitment.vercel.app'
+const NOT_PROVIDED = 'Not Provided'
 
 export function getAirtableConfig() {
   return {
@@ -90,6 +91,37 @@ function isAirtableNotFound(error) {
 
 function escapeFormulaValue(value) {
   return String(value).replace(/\\/g, '\\\\').replace(/'/g, "\\'")
+}
+
+function getFieldValue(fields, fieldNames, fallback = NOT_PROVIDED) {
+  for (const fieldName of fieldNames) {
+    const value = fields[fieldName]
+    if (Array.isArray(value)) {
+      if (value.length > 0) {
+        return value
+      }
+      continue
+    }
+
+    if (value !== null && value !== undefined && String(value).trim() !== '') {
+      return value
+    }
+  }
+
+  return fallback
+}
+
+function getAttachmentUrl(value) {
+  if (Array.isArray(value)) {
+    const attachment = value.find((item) => item?.url)
+    return attachment?.url || ''
+  }
+
+  if (value && typeof value === 'object') {
+    return value.url || ''
+  }
+
+  return value || ''
 }
 
 export async function getAthleteById(id) {
@@ -248,33 +280,35 @@ export async function updateAthleteProfileFields(recordId, payload) {
 }
 
 export function normalizeAthleteRecord(record) {
-  const fields = record.fields || {}
+  const fields = record?.fields || {}
+  const recordId = record?.id || ''
   const firstName = fields['First Name'] || ''
   const lastName = fields['Last Name'] || ''
-  const slug = fields[PROFILE_SLUG_FIELD] || createAthleteSlug(firstName, lastName, record.id)
+  const slug = fields[PROFILE_SLUG_FIELD] || createAthleteSlug(firstName, lastName, recordId)
+  const name = `${firstName || ''} ${lastName || ''}`.trim() || NOT_PROVIDED
 
   return {
-    id: record.id,
+    id: recordId,
     slug,
     profileUrl: fields[PROFILE_URL_FIELD] || createProfileUrl(slug),
     fields,
-    name: `${firstName} ${lastName}`.trim() || 'Athlete Profile',
-    position: fields.Position || fields['Primary Position'] || 'Position TBD',
-    gradYear: fields['Graduation Year'] || fields.Grade || fields['School Year'] || 'Grad Year TBD',
-    school: fields['Current School'] || fields.School || 'School TBD',
-    cityProvince: fields['City/Province'] || fields.City || fields.Province || 'Location TBD',
-    photoUrl: fields['Athlete Photo'] || fields.Photo || fields['Photo URL'] || '',
-    height: fields.Height || 'TBD',
-    weight: fields.Weight || 'TBD',
-    wingspan: fields.Wingspan || 'TBD',
-    gpa: fields.GPA || 'TBD',
-    testScore: fields['SAT Score'] || fields['ACT Score'] || fields['SAT / ACT'] || '',
-    bio: fields.Bio || fields.Biography || '',
-    strengths: fields.Strengths || fields['Scouting Notes'] || '',
-    videoUrl: fields['Highlight Video URL'] || fields['Highlight Video'] || '',
-    transcriptUrl: fields.Transcript || fields['Transcript URL'] || '',
-    evaluationUrl: fields.Evaluation || fields['Evaluation URL'] || '',
-    additionalFilesUrl: fields['Additional Files'] || fields['Additional Files URL'] || '',
-    status: fields.Status || 'New Prospect'
+    name,
+    position: getFieldValue(fields, ['Position', 'Primary Position']),
+    gradYear: getFieldValue(fields, ['Graduation Year', 'Grade', 'School Year']),
+    school: getFieldValue(fields, ['Current School', 'School']),
+    cityProvince: getFieldValue(fields, ['City/Province', 'City', 'Province']),
+    photoUrl: getAttachmentUrl(getFieldValue(fields, ['Athlete Photo', 'Photo', 'Photo URL'], '')),
+    height: getFieldValue(fields, ['Height']),
+    weight: getFieldValue(fields, ['Weight']),
+    wingspan: getFieldValue(fields, ['Wingspan']),
+    gpa: getFieldValue(fields, ['GPA']),
+    testScore: getFieldValue(fields, ['SAT Score', 'ACT Score', 'SAT / ACT']),
+    bio: getFieldValue(fields, ['Bio', 'Biography']),
+    strengths: getFieldValue(fields, ['Strengths', 'Scouting Notes']),
+    videoUrl: getAttachmentUrl(getFieldValue(fields, ['Highlight Video URL', 'Highlight Video'], '')),
+    transcriptUrl: getAttachmentUrl(getFieldValue(fields, ['Transcript', 'Transcript URL'], '')),
+    evaluationUrl: getAttachmentUrl(getFieldValue(fields, ['Evaluation', 'Evaluation URL'], '')),
+    additionalFilesUrl: getAttachmentUrl(getFieldValue(fields, ['Additional Files', 'Additional Files URL'], '')),
+    status: getFieldValue(fields, ['Status'], 'New Prospect')
   }
 }

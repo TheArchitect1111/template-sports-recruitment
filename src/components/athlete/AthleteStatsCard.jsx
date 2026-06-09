@@ -1,10 +1,11 @@
 export default function AthleteStatsCard({ athlete }) {
+  const profile = athlete || {}
   const stats = [
-    ['Height', athlete.height],
-    ['Weight', athlete.weight],
-    ['Wingspan', athlete.wingspan],
-    ['GPA', athlete.gpa],
-    ['SAT / ACT', athlete.testScore || 'Not provided']
+    ['Height', profile.height],
+    ['Weight', profile.weight],
+    ['Wingspan', profile.wingspan],
+    ['GPA', profile.gpa],
+    ['SAT / ACT', profile.testScore]
   ]
 
   return (
@@ -12,7 +13,7 @@ export default function AthleteStatsCard({ athlete }) {
       {stats.map(([label, value]) => (
         <div key={label}>
           <span>{label}</span>
-          <strong>{value}</strong>
+          <strong>{value || 'Not Provided'}</strong>
         </div>
       ))}
     </section>
