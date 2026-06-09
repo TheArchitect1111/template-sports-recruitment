@@ -47,6 +47,16 @@ function normalizeSport(value) {
   return match || 'Other'
 }
 
+function normalizeNumber(value) {
+  const text = String(value || '').trim()
+  if (!text) {
+    return ''
+  }
+
+  const match = text.match(/\d+(\.\d+)?/)
+  return match ? Number(match[0]) : text
+}
+
 export function normalizeApplicant(payload) {
   const schoolYear = normalizeSchoolYear(payload.graduationYear)
   const sport = normalizeSport(payload.sport)
@@ -60,10 +70,10 @@ export function normalizeApplicant(payload) {
     Sport: sport,
     Position: payload.position,
     Height: payload.height,
-    Weight: payload.weight,
+    Weight: normalizeNumber(payload.weight),
     Wingspan: payload.wingspan,
-    GPA: payload.gpa,
-    'SAT / ACT': payload.satScore,
+    GPA: normalizeNumber(payload.gpa),
+    'SAT / ACT': normalizeNumber(payload.satScore),
     School: payload.currentSchool,
     'Grad Year': schoolYear,
     Grade: schoolYear,
@@ -103,12 +113,12 @@ export function normalizeAirtableApplicant(payload) {
     Sport: sport,
     Position: payload.position,
     Height: payload.height,
-    Weight: payload.weight,
+    Weight: normalizeNumber(payload.weight),
     Wingspan: payload.wingspan,
     School: payload.currentSchool,
     'Grad Year': schoolYear,
-    GPA: payload.gpa,
-    'SAT / ACT': payload.satScore,
+    GPA: normalizeNumber(payload.gpa),
+    'SAT / ACT': normalizeNumber(payload.satScore),
     Bio: payload.bio,
     Strengths: payload.strengths,
     'Highlight Video': payload.highlightVideoUrl,
@@ -227,14 +237,23 @@ function getUnknownFieldName(error) {
   return match?.[1] || ''
 }
 
-function stripUnknownField(fields, error) {
-  const unknownField = getUnknownFieldName(error)
-  if (!unknownField || !(unknownField in fields)) {
+function getInvalidValueFieldName(error) {
+  const match = String(error?.message || '').match(/Field "([^"]+)" cannot accept the provided value/i)
+  return match?.[1] || ''
+}
+
+function getRetryableFieldName(error) {
+  return getUnknownFieldName(error) || getInvalidValueFieldName(error)
+}
+
+function stripRetryableField(fields, error) {
+  const fieldName = getRetryableFieldName(error)
+  if (!fieldName || !(fieldName in fields)) {
     return null
   }
 
   const nextFields = { ...fields }
-  delete nextFields[unknownField]
+  delete nextFields[fieldName]
   return nextFields
 }
 
@@ -262,15 +281,15 @@ export async function createAirtableRecord(fields) {
     } catch (schemaError) {
       let retryFields = { ...fields }
       const droppedFields = []
-      let lastError = getUnknownFieldName(schemaError) ? schemaError : firstError
+      let lastError = getRetryableFieldName(schemaError) ? schemaError : firstError
 
       for (let index = 0; index < Object.keys(fields).length; index += 1) {
-        const strippedFields = stripUnknownField(retryFields, lastError)
+        const strippedFields = stripRetryableField(retryFields, lastError)
         if (!strippedFields) {
           throw lastError
         }
 
-        const droppedField = getUnknownFieldName(lastError)
+        const droppedField = getRetryableFieldName(lastError)
         droppedFields.push(droppedField)
         retryFields = strippedFields
 
