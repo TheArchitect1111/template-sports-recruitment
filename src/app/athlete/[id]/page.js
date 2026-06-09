@@ -5,8 +5,8 @@ import { createProfileUrl, getAirtableConfig, getAthleteByIdOrSlug } from '../..
 export const dynamic = 'force-dynamic'
 
 function hasAirtableEnvironment() {
-  const { apiKey, baseId } = getAirtableConfig()
-  return Boolean(apiKey && baseId)
+  const { apiKey, baseId, tableId } = getAirtableConfig()
+  return Boolean(apiKey && baseId && tableId)
 }
 
 function createSampleAthlete(id) {

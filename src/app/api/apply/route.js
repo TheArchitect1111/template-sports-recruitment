@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server'
-import { updateAthleteProfileFields } from '../../../lib/airtable'
+import { getAirtableConfig, updateAthleteProfileFields } from '../../../lib/airtable'
 import {
   createAirtableRecord,
   normalizeAirtableApplicant,
@@ -28,6 +28,7 @@ export async function POST(request) {
 
     const fields = normalizeApplicant(payload)
     const airtableFields = normalizeAirtableApplicant(payload)
+    const { baseId, tableId } = getAirtableConfig()
     const airtableResult = await createAirtableRecord(airtableFields)
     const profileResult = airtableResult?.id
       ? await updateAthleteProfileFields(airtableResult.id, payload)
@@ -49,6 +50,10 @@ export async function POST(request) {
       profileId: airtableResult?.id || null,
       profileSlug: profileResult?.slug || null,
       profileUrl: profileResult?.profileUrl || null,
+      airtableDestination: {
+        baseId,
+        tableId
+      },
       integrations
     })
   } catch (error) {
