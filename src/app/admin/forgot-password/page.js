@@ -3,7 +3,7 @@
 import Link from 'next/link'
 import { useState } from 'react'
 
-export default function ResetPasswordPage() {
+export default function AdminForgotPasswordPage() {
   const [form, setForm] = useState({ name: '', email: '' })
   const [message, setMessage] = useState('')
   const [error, setError] = useState('')
@@ -27,8 +27,8 @@ export default function ResetPasswordPage() {
       })
       const result = await response.json()
 
-      if (!response.ok) {
-        throw new Error(result.error || 'Unable to request reset')
+      if (!response.ok || !result.ok) {
+        throw new Error(result.error || result.message || 'Unable to request reset')
       }
 
       setMessage(result.message || 'Password reset request sent.')
@@ -63,8 +63,8 @@ export default function ResetPasswordPage() {
             <span>CPR</span>
           </span>
           <p className="eyebrow">CPR admin access</p>
-          <h1>Start fresh with admin access</h1>
-          <p className="heroCopy">There is no username to recover. Send a request and CPR administration can issue a fresh admin password.</p>
+          <h1>Request fresh admin access</h1>
+          <p className="heroCopy">Submit your name and email. CPR administration will receive the request, and you will receive a confirmation email.</p>
         </div>
 
         <form onSubmit={submitReset} className="loginCard">

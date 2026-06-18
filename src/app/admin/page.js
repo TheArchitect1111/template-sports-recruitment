@@ -146,7 +146,7 @@ export default function AdminPage() {
           </form>
 
           <div className="loginHelpLinks">
-            <Link href="/reset-password">Need a fresh password?</Link>
+            <Link href="/admin/forgot-password">Need a fresh password?</Link>
             <Link href="/apply">Sign up / submit athlete profile</Link>
           </div>
 
