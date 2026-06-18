@@ -38,7 +38,8 @@ const REQUIRED_AIRTABLE_FIELDS = [
   { name: 'Bio', type: 'multilineText' },
   { name: 'Strengths', type: 'multilineText' },
   { name: 'Highlight Video', type: 'url' },
-  { name: 'Photo URL', type: 'url' }
+  { name: 'Photo URL', type: 'url' },
+  { name: 'Status', type: 'singleSelect', options: { choices: ['New', 'Reviewing', 'Contacted', 'Placed', 'Closed'].map((name) => ({ name })) } }
 ]
 const AIRTABLE_FIELD_ALIASES = {
   School: ['Current School'],
@@ -371,10 +372,22 @@ export async function getAirtableRecord(id) {
 }
 
 export async function updateAirtableStatus(id, status) {
-  return {
-    skipped: true,
-    reason: `Status was not updated in Airtable because the current table does not include a Status field. Requested status: ${status}`,
-    record: { id, fields: {} }
+  const patchStatus = () => airtableFetch(`/${id}`, {
+    method: 'PATCH',
+    body: JSON.stringify({ fields: { Status: status } })
+  })
+
+  try {
+    const record = await patchStatus()
+    return { skipped: false, record }
+  } catch (firstError) {
+    if (!/Unknown field name/i.test(firstError.message || '')) {
+      throw firstError
+    }
+
+    await ensureApplicationFields()
+    const record = await patchStatus()
+    return { skipped: false, record }
   }
 }
 
@@ -402,35 +415,105 @@ export async function notifyMake(fields) {
 
 export async function sendConfirmationEmail(fields) {
   const apiKey = process.env.RESEND_API_KEY
-  if (!apiKey || !fields.Email) {
+  const from = process.env.RESEND_FROM_EMAIL || 'Canadian Prospects <onboarding@resend.dev>'
+  const adminEmail = process.env.ADMIN_EMAIL || process.env.CPR_ADMIN_EMAIL
+  const recipientEmails = Array.from(new Set([fields.Email, fields['Parent Email']].filter(Boolean)))
+
+  if (!apiKey || recipientEmails.length === 0) {
     return { skipped: true }
   }
 
   try {
-    const response = await fetch('https://api.resend.com/emails', {
-      method: 'POST',
-      headers: {
-        Authorization: `Bearer ${apiKey}`,
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        from: 'Canadian Prospects <onboarding@resend.dev>',
-        to: [fields.Email],
-        subject: 'Canadian Prospects application received',
-        html: `
-          <p>Hi ${fields['First Name'] || 'there'},</p>
-          <p>Your Canadian Prospects Recruitment application has been received.</p>
-          <p>Our team will review your profile, film, academics, and fee agreement details.</p>
-        `
-      })
-    })
+    const athleteName = `${fields['First Name'] || ''} ${fields['Last Name'] || ''}`.trim() || 'Athlete'
+    const profileUrl = fields.profileUrl || ''
+    const profileLinkHtml = profileUrl
+      ? `<p><a href="${profileUrl}" style="display:inline-block;background:#cc0000;color:#ffffff;padding:12px 18px;border-radius:8px;text-decoration:none;font-weight:700;">View athlete profile</a></p>
+         <p style="font-size:13px;color:#555;">Profile link: <a href="${profileUrl}">${profileUrl}</a></p>`
+      : '<p>Your public profile link is being prepared and will be available once the athlete record is created.</p>'
+    const emailHtml = `
+      <div style="font-family:Arial,sans-serif;background:#f5f5f5;padding:24px;">
+        <div style="max-width:620px;margin:0 auto;background:#ffffff;border-top:6px solid #cc0000;border-radius:12px;overflow:hidden;">
+          <div style="background:#0a0a0a;color:#ffffff;padding:22px 24px;">
+            <h1 style="margin:0;font-size:22px;letter-spacing:0.04em;">Canadian Prospects Recruitment</h1>
+            <p style="margin:6px 0 0;color:#d1d5db;">Finding opportunity. Building futures.</p>
+          </div>
+          <div style="padding:24px;color:#111827;line-height:1.6;">
+            <p>Hi ${fields['First Name'] || 'there'},</p>
+            <p>Your Canadian Prospects Recruitment application has been received.</p>
+            <p>Our team will review your profile, film, academics, and fee agreement details.</p>
+            ${profileLinkHtml}
+            <p style="margin-top:24px;">Thank you,<br />Canadian Prospects Recruitment</p>
+          </div>
+        </div>
+      </div>
+    `
 
-    const body = await response.json().catch(() => ({}))
-    if (!response.ok) {
-      return { skipped: false, ok: false, status: response.status, error: body.message || 'Resend email failed' }
+    const sends = [
+      fetch('https://api.resend.com/emails', {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${apiKey}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          from,
+          to: recipientEmails,
+          subject: 'Canadian Prospects application received',
+          html: emailHtml
+        })
+      })
+    ]
+
+    if (adminEmail) {
+      sends.push(fetch('https://api.resend.com/emails', {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${apiKey}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          from,
+          to: [adminEmail],
+          subject: `New CPR athlete application: ${athleteName}`,
+          html: `
+            <div style="font-family:Arial,sans-serif;background:#f5f5f5;padding:24px;">
+              <div style="max-width:620px;margin:0 auto;background:#ffffff;border-top:6px solid #cc0000;border-radius:12px;overflow:hidden;">
+                <div style="background:#0a0a0a;color:#ffffff;padding:22px 24px;">
+                  <h1 style="margin:0;font-size:22px;">New CPR Athlete Application</h1>
+                </div>
+                <div style="padding:24px;color:#111827;line-height:1.6;">
+                  <p><strong>Athlete:</strong> ${athleteName}</p>
+                  <p><strong>Sport:</strong> ${fields.Sport || 'Not provided'}</p>
+                  <p><strong>Email:</strong> ${fields.Email || 'Not provided'}</p>
+                  <p><strong>Parent:</strong> ${fields['Parent Name'] || 'Not provided'} ${fields['Parent Email'] ? `(${fields['Parent Email']})` : ''}</p>
+                  ${profileUrl ? `<p><strong>Profile:</strong> <a href="${profileUrl}">${profileUrl}</a></p>` : ''}
+                </div>
+              </div>
+            </div>
+          `
+        })
+      }))
     }
 
-    return { skipped: false, ok: true, id: body.id }
+    const responses = await Promise.all(sends)
+    const bodies = await Promise.all(responses.map((response) => response.json().catch(() => ({}))))
+    const failedIndex = responses.findIndex((response) => !response.ok)
+    if (failedIndex !== -1) {
+      return {
+        skipped: false,
+        ok: false,
+        status: responses[failedIndex].status,
+        error: bodies[failedIndex].message || 'Resend email failed'
+      }
+    }
+
+    return {
+      skipped: false,
+      ok: true,
+      ids: bodies.map((body) => body.id).filter(Boolean),
+      recipients: recipientEmails,
+      adminNotified: Boolean(adminEmail)
+    }
   } catch (error) {
     return { skipped: false, ok: false, error: error.message || 'Resend email failed' }
   }

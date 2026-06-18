@@ -33,7 +33,13 @@ export async function POST(request) {
     const profileResult = airtableResult?.id
       ? await updateAthleteProfileFields(airtableResult.id, payload)
       : { skipped: true, reason: 'Airtable record was not created' }
-    const results = await Promise.allSettled([notifyMake({ ...fields, ...profileResult }), sendConfirmationEmail(fields)])
+    const submission = {
+      ...fields,
+      profileId: airtableResult?.id || null,
+      profileSlug: profileResult?.slug || null,
+      profileUrl: profileResult?.profileUrl || null
+    }
+    const results = await Promise.allSettled([notifyMake(submission), sendConfirmationEmail(submission)])
 
     const integrations = [
       { airtable: airtableResult },

@@ -9,6 +9,15 @@ function getAthleteName(fields) {
   return `${fields['First Name'] || ''} ${fields['Last Name'] || ''}`.trim() || 'Unnamed athlete'
 }
 
+function getProfileHref(record) {
+  const fields = record.fields || {}
+  if (fields['Profile Slug']) {
+    return `/athlete/${fields['Profile Slug']}`
+  }
+
+  return `/athlete/${record.id}`
+}
+
 export default function AdminPage() {
   const [password, setPassword] = useState('')
   const [records, setRecords] = useState([])
@@ -106,12 +115,23 @@ export default function AdminPage() {
         </nav>
       </header>
 
-      <section className="adminShell">
-        <div className="adminPanel">
+      <section className="adminShell loginHero">
+        <div className="loginBrandPanel">
+          <span className="cprLogo largeLogo" aria-label="CPR logo">
+            <span>CPR</span>
+          </span>
           <div>
             <p className="eyebrow">Admin portal</p>
-            <h1>Athlete table</h1>
-            <p className="heroCopy">Filter athletes, review profile links, and manage recruitment status from Airtable.</p>
+            <h1>Welcome, CPR team</h1>
+            <p className="heroCopy">Log in to review athletes, manage profile status, and keep recruitment records organized.</p>
+          </div>
+        </div>
+
+        <div className="adminPanel loginCard adminLoginCard">
+          <div>
+            <p className="eyebrow">Secure access</p>
+            <h2>Athlete table</h2>
+            <p className="panelCopy">No username is required. Enter the current CPR admin password to load athlete records from Airtable.</p>
           </div>
 
           <form onSubmit={loadRecords} className="adminLogin">
@@ -122,8 +142,13 @@ export default function AdminPage() {
               placeholder="Admin password"
               required
             />
-            <button type="submit" disabled={loading}>{loading ? 'Loading...' : 'Load athletes'}</button>
+            <button type="submit" disabled={loading}>{loading ? 'Logging in...' : 'Log in to Admin Portal'}</button>
           </form>
+
+          <div className="loginHelpLinks">
+            <Link href="/reset-password">Need a fresh password?</Link>
+            <Link href="/apply">Sign up / submit athlete profile</Link>
+          </div>
 
           <div className="adminToolbar">
             <input
@@ -160,7 +185,7 @@ export default function AdminPage() {
                 return (
                   <tr key={record.id}>
                     <td>
-                      <Link href={`/profile/${record.id}`}>{getAthleteName(fields)}</Link>
+                      <Link href={getProfileHref(record)}>{getAthleteName(fields)}</Link>
                       <div>{fields.Email || 'No email'}</div>
                     </td>
                     <td>{fields.Sport || 'TBD'}</td>

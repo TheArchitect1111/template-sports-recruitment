@@ -1,7 +1,11 @@
 const PROFILE_SLUG_FIELD = 'Profile Slug'
 const PROFILE_URL_FIELD = 'Profile URL'
 const PUBLIC_FIELD = 'Public'
-const PROFILE_SITE_URL = process.env.PROFILE_SITE_URL || 'https://template-sports-recruitment.vercel.app'
+const PROFILE_SITE_URL =
+  process.env.PROFILE_SITE_URL ||
+  process.env.NEXT_PUBLIC_SITE_URL ||
+  (process.env.VERCEL_PROJECT_PRODUCTION_URL ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}` : '') ||
+  'https://cpr-site.vercel.app'
 const NOT_PROVIDED = 'Not Provided'
 
 export function getAirtableConfig() {

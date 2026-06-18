@@ -1,6 +1,5 @@
 import { NextResponse } from 'next/server'
 import { getAdminAuthError, isValidAdminPassword } from '../../../../lib/adminAuth'
-import { listAirtableRecords } from '../../../../lib/integrations'
 
 export async function POST(request) {
   const { password } = await request.json()
@@ -9,10 +8,5 @@ export async function POST(request) {
     return NextResponse.json({ error: getAdminAuthError() }, { status: 401 })
   }
 
-  try {
-    const result = await listAirtableRecords()
-    return NextResponse.json(result)
-  } catch (error) {
-    return NextResponse.json({ error: error.message || 'Unable to load leads' }, { status: 500 })
-  }
+  return NextResponse.json({ ok: true })
 }

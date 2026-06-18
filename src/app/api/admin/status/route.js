@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server'
+import { getAdminAuthError, isValidAdminPassword } from '../../../../lib/adminAuth'
 import { updateAirtableStatus } from '../../../../lib/integrations'
 
 const allowedStatuses = ['New', 'Reviewing', 'Contacted', 'Placed', 'Closed']
@@ -6,8 +7,8 @@ const allowedStatuses = ['New', 'Reviewing', 'Contacted', 'Placed', 'Closed']
 export async function POST(request) {
   const { password, id, status } = await request.json()
 
-  if (!process.env.ADMIN_PASSWORD || password !== process.env.ADMIN_PASSWORD) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+  if (!isValidAdminPassword(password)) {
+    return NextResponse.json({ error: getAdminAuthError() }, { status: 401 })
   }
 
   if (!id || !allowedStatuses.includes(status)) {

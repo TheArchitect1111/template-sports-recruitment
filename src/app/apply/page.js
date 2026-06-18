@@ -63,6 +63,7 @@ export default function ApplyPage() {
   const [form, setForm] = useState(initialForm)
   const [status, setStatus] = useState('idle')
   const [message, setMessage] = useState('')
+  const [profileUrl, setProfileUrl] = useState('')
 
   const updateField = (event) => {
     const { name, type, value, checked, files } = event.target
@@ -74,6 +75,7 @@ export default function ApplyPage() {
     event.preventDefault()
     setStatus('loading')
     setMessage('')
+    setProfileUrl('')
 
     try {
       const response = await fetch('/api/submit', {
@@ -88,7 +90,8 @@ export default function ApplyPage() {
       }
 
       setStatus('success')
-      setMessage(`Application submitted. Profile ID: ${result.profileId || 'pending'}`)
+      setMessage(result.profileUrl ? 'Application submitted. Public profile created.' : `Application submitted. Profile ID: ${result.profileId || 'pending'}`)
+      setProfileUrl(result.profileUrl || '')
       setForm(initialForm)
     } catch (error) {
       setStatus('error')
@@ -224,6 +227,11 @@ export default function ApplyPage() {
                   {status === 'loading' ? 'Submitting...' : 'Submit application'}
                 </button>
                 {message && <p className={`formMessage ${status}`}>{message}</p>}
+                {profileUrl && (
+                  <p className="formMessage success">
+                    Public profile: <a href={profileUrl}>{profileUrl}</a>
+                  </p>
+                )}
               </div>
             </div>
           </section>
