@@ -241,6 +241,7 @@ function isUnknownFieldError(error) {
 export async function updateAthleteProfileFields(recordId, payload) {
   const slug = createAthleteSlug(payload.firstName, payload.lastName, recordId)
   const profileUrl = createProfileUrl(slug)
+  const recordProfileUrl = createProfileUrl(recordId)
   const profileFields = {
     [PROFILE_SLUG_FIELD]: slug,
     [PROFILE_URL_FIELD]: profileUrl,
@@ -283,11 +284,22 @@ export async function updateAthleteProfileFields(recordId, payload) {
           publicReason: secondError.message
         }
       } catch (thirdError) {
+        if (isUnknownFieldError(thirdError)) {
+          return {
+            skipped: false,
+            id: recordId,
+            slug: recordId,
+            profileUrl: recordProfileUrl,
+            metadataSkipped: true,
+            metadataReason: thirdError.message
+          }
+        }
+
         return {
           skipped: true,
           reason: thirdError.message,
-          slug,
-          profileUrl
+          slug: recordId,
+          profileUrl: recordProfileUrl
         }
       }
     }
