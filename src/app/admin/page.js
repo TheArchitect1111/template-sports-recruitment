@@ -11,8 +11,23 @@ function getAthleteName(fields) {
 
 function getProfileHref(record) {
   const fields = record.fields || {}
+  const profileUrl = fields['Profile URL']
+  if (profileUrl) {
+    try {
+      const url = new URL(profileUrl)
+      if (url.pathname.startsWith('/athlete/')) {
+        return url.pathname
+      }
+    } catch {
+      if (String(profileUrl).startsWith('/athlete/')) {
+        return profileUrl
+      }
+    }
+  }
+
   if (fields['Profile Slug']) {
-    return `/athlete/${fields['Profile Slug']}`
+    const slug = String(fields['Profile Slug']).replace(/^https?:\/\/[^/]+\/athlete\//, '').replace(/^\/?athlete\//, '')
+    return `/athlete/${slug}`
   }
 
   return `/athlete/${record.id}`
