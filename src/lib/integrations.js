@@ -100,6 +100,7 @@ export function normalizeApplicant(payload) {
     'Gameplay Video Upload': payload.gameplayVideoUpload,
     'Fee Agreement': payload.paymentAgreement ? 'Acknowledged 3 payments of $500 each' : 'Not acknowledged',
     'NIL Interest': payload.nilInterest ? 'Yes' : 'No',
+    'Family Portal Opt-In': payload.familyPortalOptIn ? 'Yes' : 'No',
     'Terms Agreement': payload.termsAgreement ? 'Agreed' : 'Not agreed',
     'Digital Signature': payload.digitalSignature,
     Status: 'New',
@@ -426,6 +427,12 @@ export async function sendConfirmationEmail(fields) {
   try {
     const athleteName = `${fields['First Name'] || ''} ${fields['Last Name'] || ''}`.trim() || 'Athlete'
     const profileUrl = fields.profileUrl || ''
+    const familyPortalUrl = `${process.env.NEXT_PUBLIC_SITE_URL || process.env.PROFILE_SITE_URL || 'https://cpr-site.vercel.app'}/portal`
+    const familyPortalHtml = fields['Family Portal Opt-In'] === 'Yes'
+      ? `<p style="margin-top:18px;">You also requested access to the CPR Family Hub. This is a separate informational guide for parents and families. It does not connect to, share, or change the athlete's public player profile.</p>
+         <p><a href="${familyPortalUrl}" style="display:inline-block;background:#111111;color:#ffffff;padding:12px 18px;border-radius:8px;text-decoration:none;font-weight:700;">Open CPR Family Hub</a></p>
+         <p style="font-size:13px;color:#555;">Family Hub link: <a href="${familyPortalUrl}">${familyPortalUrl}</a></p>`
+      : ''
     const profileLinkHtml = profileUrl
       ? `<p><a href="${profileUrl}" style="display:inline-block;background:#cc0000;color:#ffffff;padding:12px 18px;border-radius:8px;text-decoration:none;font-weight:700;">View athlete profile</a></p>
          <p style="font-size:13px;color:#555;">Profile link: <a href="${profileUrl}">${profileUrl}</a></p>`
@@ -442,6 +449,7 @@ export async function sendConfirmationEmail(fields) {
             <p>Your Canadian Prospects Recruitment application has been received.</p>
             <p>Our team will review your profile, film, academics, and fee agreement details.</p>
             ${profileLinkHtml}
+            ${familyPortalHtml}
             <p style="margin-top:24px;">Thank you,<br />Canadian Prospects Recruitment</p>
           </div>
         </div>
@@ -486,6 +494,7 @@ export async function sendConfirmationEmail(fields) {
                   <p><strong>Sport:</strong> ${fields.Sport || 'Not provided'}</p>
                   <p><strong>Email:</strong> ${fields.Email || 'Not provided'}</p>
                   <p><strong>Parent:</strong> ${fields['Parent Name'] || 'Not provided'} ${fields['Parent Email'] ? `(${fields['Parent Email']})` : ''}</p>
+                  <p><strong>Family Hub Opt-In:</strong> ${fields['Family Portal Opt-In'] || 'No'}</p>
                   ${profileUrl ? `<p><strong>Profile:</strong> <a href="${profileUrl}">${profileUrl}</a></p>` : ''}
                 </div>
               </div>

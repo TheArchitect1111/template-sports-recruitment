@@ -1,46 +1,27 @@
-'use client'
-
 import Link from 'next/link'
-import { useRouter } from 'next/navigation'
-import { useState } from 'react'
 
 const supportEmail = 'mikecrpglobal@mississaugamagic.com'
 
-function cleanProfileInput(value) {
-  const trimmed = value.trim()
+const guideSections = [
+  ['Recruiting Basics', 'Understand the recruiting timeline, coach communication, exposure, evaluations, and realistic next steps.'],
+  ['NCAA Readiness', 'Learn what families should know about registration, eligibility, transcripts, core courses, GPA, and amateurism.'],
+  ['Scholarships & Costs', 'Get clear guidance on athletic scholarships, academic awards, travel costs, event fees, and planning ahead.'],
+  ['Film & Exposure', 'Understand what quality film looks like, how exposure events work, and how coaches evaluate prospects.'],
+  ['Parent Checklist', 'Know the common family actions: transcripts, forms, payment questions, consultation scheduling, and updates.'],
+  ['Ask CPR', 'Contact CPR when your family needs help understanding the process or deciding what to do next.']
+]
 
-  if (!trimmed) {
-    return ''
-  }
-
-  try {
-    const url = new URL(trimmed)
-    return url.pathname.split('/').filter(Boolean).pop() || ''
-  } catch {
-    return trimmed
-      .replace(/^https?:\/\/[^/]+\//i, '')
-      .replace(/^\/?(athlete|profile|portal\/family)\//i, '')
-      .replace(/^\/+|\/+$/g, '')
-  }
-}
+const roadmap = [
+  'Create the athlete profile',
+  'Prepare film and academic information',
+  'Attend exposure events',
+  'Begin coach outreach',
+  'Track interest and responses',
+  'Evaluate opportunities',
+  'Commit, sign, and prepare'
+]
 
 export default function PortalPage() {
-  const router = useRouter()
-  const [profileInput, setProfileInput] = useState('')
-  const [error, setError] = useState('')
-
-  function handleSubmit(event) {
-    event.preventDefault()
-    const profileId = cleanProfileInput(profileInput)
-
-    if (!profileId) {
-      setError('Enter an athlete profile link, ID, or slug.')
-      return
-    }
-
-    router.push(`/portal/family/${encodeURIComponent(profileId)}`)
-  }
-
   return (
     <main className="familyHubPage">
       <header className="familyHubHeader">
@@ -54,48 +35,61 @@ export default function PortalPage() {
 
       <section className="familyHero">
         <p className="eyebrow">CPR Family Hub</p>
-        <h1>One place for recruiting next steps.</h1>
+        <h1>A parent guide to the recruiting process.</h1>
         <p>
-          Open a private family view using the athlete profile link, Airtable record ID, or profile slug provided by CPR.
+          This hub is an optional informational resource for parents, guardians, and family members.
+          It is separate from the player profile and does not display, connect, or share athlete profile data.
         </p>
 
-        <form className="familyLookup" onSubmit={handleSubmit}>
-          <label htmlFor="profileLookup">Athlete profile link or ID</label>
-          <div>
-            <input
-              id="profileLookup"
-              value={profileInput}
-              onChange={(event) => {
-                setProfileInput(event.target.value)
-                setError('')
-              }}
-              placeholder="Paste profile link or record ID"
-            />
-            <button type="submit">Open Hub</button>
-          </div>
-          {error ? <p className="formMessage error">{error}</p> : null}
-        </form>
-
         <div className="familyHeroActions">
-          <Link className="primaryAction" href="/apply">Submit or update athlete info</Link>
-          <a className="secondaryAction" href={`mailto:${supportEmail}?subject=${encodeURIComponent('CPR Family Hub access help')}`}>Need your hub link?</a>
+          <Link className="primaryAction" href="/apply">Opt in during application</Link>
+          <a className="secondaryAction" href={`mailto:${supportEmail}?subject=${encodeURIComponent('CPR Family Hub question')}`}>Ask CPR</a>
         </div>
       </section>
 
-      <section className="familyGrid" aria-label="Family Hub options">
-        {[
-          ['Athlete Profile', 'Review the coach-ready profile CPR is building and sharing.'],
-          ['Recruiting Status', 'See where the athlete stands and what needs attention next.'],
-          ['Documents', 'Track transcripts, evaluations, forms, and supporting files.'],
-          ['Messages', 'Ask CPR questions and request updates from one place.'],
-          ['Events & Camps', 'Keep track of showcases, camps, webinars, and registration opportunities.'],
-          ['Payments', 'View agreement and payment status as CPR wires the deeper portal tools.']
-        ].map(([title, body]) => (
+      <section className="familyStatusPanel">
+        <div className="familyStatusItem">
+          <span>Purpose</span>
+          <strong>Parent education</strong>
+        </div>
+        <div className="familyStatusItem">
+          <span>Access</span>
+          <strong>Optional welcome-email link</strong>
+        </div>
+        <div className="familyStatusItem">
+          <span>Data sharing</span>
+          <strong>No athlete profile connection</strong>
+        </div>
+      </section>
+
+      <section className="familyDashboardGrid" aria-label="Family Hub guide sections">
+        {guideSections.map(([title, body]) => (
           <article className="familyCard" key={title}>
             <h2>{title}</h2>
             <p>{body}</p>
           </article>
         ))}
+      </section>
+
+      <section className="familyGrid familyRoadmapGuide" aria-label="Recruiting roadmap">
+        <article className="familyCard familyCardWide">
+          <p className="eyebrow">Recruiting Roadmap</p>
+          <h2>What families can expect</h2>
+          <ol className="familyRoadmapList">
+            {roadmap.map((step, index) => (
+              <li key={step}>
+                <span>{String(index + 1).padStart(2, '0')}</span>
+                <strong>{step}</strong>
+              </li>
+            ))}
+          </ol>
+        </article>
+        <article className="familyCard">
+          <p className="eyebrow">Need clarity?</p>
+          <h2>Ask CPR</h2>
+          <p>Use this hub to understand the process. For athlete-specific updates, contact CPR directly.</p>
+          <a className="module-help" href={`mailto:${supportEmail}?subject=${encodeURIComponent('CPR Family Hub support')}`}>Contact CPR</a>
+        </article>
       </section>
     </main>
   )

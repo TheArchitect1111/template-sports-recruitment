@@ -66,7 +66,7 @@ const platformModules = [
   ['Coach Outreach', 'Coach directory, share links, response tracking and follow-up management.', 'outreach'],
   ['Resource Hub', 'Guides, documents, templates and recruiting education for families and athletes.', 'resource'],
   ['Event & Camp Hub', 'Showcases, webinars, camps and registration opportunities in one place.', 'event'],
-  ['Parent Portal', 'Private access for updates, messages, documents, payments and next steps.', 'portal'],
+  ['Parent Portal', 'Optional informational guide for families learning the recruiting process.', 'portal'],
   ['Pulse Dashboard', 'Visibility into applications, engagement, profile readiness, outreach and conversions.', 'pulse']
 ]
 
@@ -266,7 +266,7 @@ export default function Home() {
             ))}
           </div>
           <div className="platform-actions">
-            <Link className="btn" href="/portal">OPEN FAMILY HUB</Link>
+            <Link className="btn" href="/portal">OPEN FAMILY GUIDE</Link>
           </div>
         </div>
       </section>

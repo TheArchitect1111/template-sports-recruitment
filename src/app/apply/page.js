@@ -31,6 +31,7 @@ const initialForm = {
   gameplayVideoUpload: '',
   paymentAgreement: false,
   nilInterest: false,
+  familyPortalOptIn: false,
   termsAgreement: false,
   digitalSignature: ''
 }
@@ -203,6 +204,15 @@ export default function ApplyPage() {
                   onChange={updateField}
                 />
                 <span>I am interested in NIL education and brand opportunity guidance.</span>
+              </label>
+              <label className="checkRow wide">
+                <input
+                  type="checkbox"
+                  name="familyPortalOptIn"
+                  checked={form.familyPortalOptIn}
+                  onChange={updateField}
+                />
+                <span>Send my family the CPR Family Hub link for recruiting education and parent guidance.</span>
               </label>
               <label className="checkRow wide">
                 <input
