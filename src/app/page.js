@@ -59,6 +59,15 @@ const trackingFeatures = [
   ['Secure & Private', 'Your information is safe and only shared with coaches.']
 ]
 
+const platformModules = [
+  ['Player Profiles', 'Professional athlete pages with film, academics, achievements and coach-ready details.', 'profile'],
+  ['Coach Outreach', 'Coach directory, share links, response tracking and follow-up management.', 'outreach'],
+  ['Resource Hub', 'Guides, documents, templates and recruiting education for families and athletes.', 'resource'],
+  ['Event & Camp Hub', 'Showcases, webinars, camps and registration opportunities in one place.', 'event'],
+  ['Parent Portal', 'Private access for updates, messages, documents, payments and next steps.', 'portal'],
+  ['Pulse Dashboard', 'Visibility into applications, engagement, profile readiness, outreach and conversions.', 'pulse']
+]
+
 const stats = [
   ['500+', 'ATHLETES ASSISTED'],
   ['1,000+', 'COACH CONTACTS MADE'],
@@ -80,6 +89,23 @@ function SimpleIcon() {
   return (
     <svg className="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">
       <path d="M12 3a9 9 0 100 18 9 9 0 000-18zm0 0v18M3 12h18" />
+    </svg>
+  )
+}
+
+function PlatformIcon({ type }) {
+  const paths = {
+    profile: ['M4 20a7 7 0 0116 0', 'M12 12a4 4 0 100-8 4 4 0 000 8z'],
+    outreach: ['M3 11l18-8-6 18-3-7-9-3z', 'M12 14l9-11'],
+    resource: ['M4 5a2 2 0 012-2h12v18H6a2 2 0 01-2-2V5z', 'M8 7h7M8 11h7M8 15h5'],
+    event: ['M7 3v4M17 3v4M4 8h16M6 5h12a2 2 0 012 2v12a2 2 0 01-2 2H6a2 2 0 01-2-2V7a2 2 0 012-2z', 'M8 12h3M13 12h3M8 16h3'],
+    portal: ['M4 5h16v14H4V5z', 'M8 9h8M8 13h5M9 19v2h6v-2'],
+    pulse: ['M3 12h4l2-5 4 10 3-6h5', 'M12 3a9 9 0 110 18 9 9 0 010-18z']
+  }
+
+  return (
+    <svg className="platform-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      {(paths[type] || paths.profile).map((path) => <path key={path} d={path} />)}
     </svg>
   )
 }
@@ -212,6 +238,26 @@ export default function Home() {
             </div>
           </div>
           <img src="/dashboard.png" alt="Recruitment Dashboard" />
+        </div>
+      </section>
+
+      <section className="section platform-section" id="platform">
+        <div className="container">
+          <div className="sec-head">
+            <h2 className="display">CPR <span className="red">PLATFORM</span> ENGINE</h2>
+            <p>The CPR site is being shaped as the working template for athlete, parent, coach and organization portals.</p>
+          </div>
+          <div className="platform-grid">
+            {platformModules.map(([title, body, icon]) => (
+              <div className="platform-card" key={title}>
+                <div className="platform-icon-wrap">
+                  <PlatformIcon type={icon} />
+                </div>
+                <h3 className="display">{title}</h3>
+                <p>{body}</p>
+              </div>
+            ))}
+          </div>
         </div>
       </section>
 

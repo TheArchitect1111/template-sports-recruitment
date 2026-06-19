@@ -1874,6 +1874,61 @@ img {
   line-height: 1.5;
 }
 
+.platform-section {
+  background: #ffffff;
+}
+
+.platform-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 18px;
+}
+
+.platform-card {
+  min-height: 230px;
+  display: grid;
+  align-content: start;
+  gap: 12px;
+  padding: 24px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  color: var(--ink);
+  background: #ffffff;
+  box-shadow: 0 14px 34px rgba(10, 10, 10, 0.06);
+}
+
+.platform-icon-wrap {
+  width: 64px;
+  height: 64px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  color: #ffffff;
+  background:
+    linear-gradient(135deg, rgba(255, 107, 0, 0.95), rgba(200, 16, 46, 0.95)),
+    var(--red);
+}
+
+.platform-icon {
+  width: 34px;
+  height: 34px;
+}
+
+.platform-card h3 {
+  margin: 4px 0 0;
+  color: var(--ink);
+  font-size: 18px;
+  font-weight: 800;
+  letter-spacing: 0.7px;
+}
+
+.platform-card p {
+  margin: 0;
+  color: var(--gray);
+  font-size: 13.5px;
+  line-height: 1.55;
+}
+
 .stats {
   position: relative;
   overflow: hidden;
@@ -2138,6 +2193,10 @@ img {
   .process-grid {
     grid-template-columns: 1fr 1fr;
     gap: 14px;
+  }
+
+  .platform-grid {
+    grid-template-columns: 1fr;
   }
 
   .process-card {
