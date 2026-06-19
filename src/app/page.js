@@ -1,40 +1,5 @@
+/* eslint-disable @next/next/no-img-element */
 import Link from 'next/link'
-import Image from 'next/image'
-
-const processSteps = [
-  ['Apply', 'Start with a complete athlete profile and family contact details.'],
-  ['Upload', 'Add film, photos, transcripts, report cards, awards, and documents.'],
-  ['Agreement', 'Review the service agreement and sign digitally.'],
-  ['Recruiting', 'Our team prepares outreach for aligned college programs.'],
-  ['Opportunities', 'Track coach interest, next steps, and school fit.']
-]
-
-const uploads = [
-  'Mixtapes/Game Film',
-  'YouTube Links',
-  'Photos',
-  'Teams',
-  'Transcripts',
-  'Report Cards',
-  'Awards',
-  'Other Documents'
-]
-
-const features = [
-  'Coach contact tracking',
-  'School fit pipeline',
-  'Document review status',
-  'Application progress',
-  'Film package readiness',
-  'Family update dashboard'
-]
-
-const stats = [
-  ['500+', 'Athletes Assisted'],
-  ['1000+', 'Coach Contacts Made'],
-  ['250+', 'Schools Reached'],
-  ['$25M+', 'in Scholarship Opportunities']
-]
 
 const campImages = [
   '1000240202.jpg',
@@ -66,285 +31,305 @@ const playToWinImages = [
   '1000240266.jpg'
 ].map((name) => `/cpr-home/play-to-win/${name}`)
 
-const stories = [
-  {
-    quote: 'CPR helped me organize my film, understand coach communication, and find the right academic fit.',
-    name: 'Liam O.',
-    school: 'University of Illinois'
-  },
-  {
-    quote: 'The process gave my family clarity. I knew what to upload, who was reviewing me, and what came next.',
-    name: 'Noah W.',
-    school: 'Syracuse University'
-  },
-  {
-    quote: 'Canadian Prospects helped me turn interest into real conversations with schools that matched my goals.',
-    name: 'Mason B.',
-    school: 'University of Kentucky'
-  }
+const processSteps = [
+  ['1. APPLY', 'Complete your application and create your player profile.'],
+  ['2. UPLOAD', 'Upload your mixtapes, YouTube links, pictures, teams and documents.'],
+  ['3. AGREEMENT', 'Review and complete the Fee Structure Agreement to activate your profile.'],
+  ['4. RECRUITING', 'We send your profile to coaches and track responses.'],
+  ['5. OPPORTUNITIES', 'We present real opportunities and guide you every step of the way.']
 ]
 
-function CprLogo() {
-  return (
-    <span className="cprLogo" aria-label="CPR logo">
-      <span>CPR</span>
-    </span>
-  )
-}
+const uploadTiles = [
+  'Mixtapes / Game Film',
+  'YouTube Links',
+  'Photos',
+  'Teams',
+  'Transcripts',
+  'Report Cards',
+  'Awards & Achievements',
+  'Other Documents'
+]
+
+const trackingFeatures = [
+  ['Coach Outreach', 'We send your profile to the right coaches and programs.'],
+  ['Opportunity Management', 'We help you manage interest, visits and offers.'],
+  ['Response Tracking', 'Track opens, views and responses from coaches.'],
+  ['Real-Time Updates', 'Your dashboard keeps you updated every step of the way.'],
+  ['School Interest', 'See which schools are interested in you.'],
+  ['Secure & Private', 'Your information is safe and only shared with coaches.']
+]
+
+const stats = [
+  ['500+', 'ATHLETES ASSISTED'],
+  ['1,000+', 'COACH CONTACTS MADE'],
+  ['250+', 'SCHOOLS REACHED'],
+  ['$25M+', 'IN SCHOLARSHIP OPPORTUNITIES']
+]
 
 function RotatingImageStack({ images, label }) {
   return (
     <div className="rotatingImageStack" aria-label={label}>
       {images.map((src, index) => (
-        <Image
-          key={src}
-          src={src}
-          alt=""
-          aria-hidden="true"
-          fill
-          sizes="(max-width: 980px) 100vw, 50vw"
-          className="rotatingPhoto"
-          style={{ '--image-index': index }}
-        />
+        <img key={src} src={src} alt="" aria-hidden="true" style={{ '--image-index': index }} />
       ))}
     </div>
   )
 }
 
+function SimpleIcon() {
+  return (
+    <svg className="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M12 3a9 9 0 100 18 9 9 0 000-18zm0 0v18M3 12h18" />
+    </svg>
+  )
+}
+
 export default function Home() {
   return (
-    <main>
-      <header className="siteHeader">
-        <Link className="brand" href="/">
-          <CprLogo />
-          <span className="brandText">
-            <strong>CANADIAN PROSPECTS RECRUITMENT</strong>
-            <small>FINDING OPPORTUNITY. BUILDING FUTURES.</small>
-          </span>
-        </Link>
-        <nav className="topNav" aria-label="Main navigation">
-          <a href="#process">Process</a>
-          <a href="#showcase">Showcase</a>
-          <a href="#tracking">Tracking</a>
-          <a href="#stories">Stories</a>
-          <Link href="/apply">Apply</Link>
-        </nav>
+    <>
+      <header className="nav">
+        <div className="nav-inner">
+          <img src="/cpr-logo.png" alt="Canadian Prospects Recruitment" className="nav-logo" />
+          <div className="nav-brand display">
+            <div className="b1">CANADIAN PROSPECTS</div>
+            <div className="b2">RECRUITMENT</div>
+            <div className="b3">FINDING OPPORTUNITY. BUILDING FUTURES.</div>
+          </div>
+          <nav className="nav-links" aria-label="Main navigation">
+            <a href="#top" className="active">HOME</a>
+            <a href="#about-us">ABOUT US</a>
+            <a href="#how-it-works">HOW IT WORKS</a>
+            <a href="#success-stories">SUCCESS STORIES</a>
+            <a href="#faq">FAQ</a>
+            <a href="#contact">CONTACT</a>
+            <Link className="btn" href="/apply">APPLY NOW</Link>
+          </nav>
+        </div>
       </header>
 
-      <section className="homeHero">
-        <div className="heroCopyBlock">
-          <p className="eyebrow">Canadian basketball recruitment</p>
-          <h1>
-            YOUR NEXT <span>OPPORTUNITY</span> STARTS HERE.
-          </h1>
-          <p className="heroCopy">
-            We help Canadian student-athletes get noticed by college coaches and find the right school to compete and succeed.
-          </p>
-          <div className="heroActions">
-            <Link className="primaryAction" href="/apply">APPLY NOW</Link>
-            <a className="secondaryAction" href="#showcase">WATCH VIDEO</a>
+      <section className="hero" id="top">
+        <div className="hero-grid">
+          <div className="hero-copy">
+            <h1 className="display">
+              YOUR NEXT<br />
+              <span className="l2">OPPORTUNITY</span><br />
+              STARTS HERE.
+            </h1>
+            <p>We help Canadian student-athletes get noticed by college coaches and find the right school to compete and succeed.</p>
+            <div className="hero-btns">
+              <Link className="btn" href="/apply">APPLY NOW</Link>
+              <a className="btn btn-outline" href="https://youtu.be/iqietCwnCxc">WATCH VIDEO</a>
+            </div>
           </div>
-        </div>
-
-        <div className="heroPhoto" aria-label="Basketball player photo placeholder">
-          <div className="photoBadge">
-            <strong>CPR</strong>
-            <span>Prospect Ready</span>
-          </div>
+          <div className="hero-img" style={{ backgroundImage: "url('/hero-committed.jpg')" }}></div>
         </div>
       </section>
 
-      <section id="process" className="processSection">
-        <div className="sectionIntro centered">
-          <p className="eyebrow">How it works</p>
-          <h2>OUR RECRUITMENT PROCESS</h2>
-        </div>
-        <div className="processGrid">
-          {processSteps.map(([title, body], index) => (
-            <article key={title} className="processStep">
-              <span className="processIcon">{index + 1}</span>
-              <h3>{title}</h3>
-              <p>{body}</p>
-            </article>
-          ))}
-        </div>
-      </section>
-
-      <section id="showcase" className="showcaseSection">
-        <div className="sectionIntro">
-          <p className="eyebrow">Athlete showcase</p>
-          <h2>Build a profile coaches can review fast.</h2>
-        </div>
-        <div className="showcaseGrid">
-          <div className="uploadGrid">
-            {uploads.map((item) => (
-              <article key={item} className="uploadTile">
-                <span>+</span>
-                <strong>{item}</strong>
-              </article>
+      <section className="section" id="how-it-works">
+        <div className="container">
+          <div className="sec-head">
+            <h2 className="display">OUR <span className="red">RECRUITMENT</span> PROCESS</h2>
+            <p>We make the recruiting process simple, organized and effective.</p>
+          </div>
+          <div className="process-grid">
+            {processSteps.map(([title, body], index) => (
+              <div className="process-card" key={title}>
+                <SimpleIcon />
+                <h3 className="display">{title}</h3>
+                <p>{body}</p>
+                {index < processSteps.length - 1 && <span className="arrow">›</span>}
+              </div>
             ))}
           </div>
+        </div>
+      </section>
 
-          <aside className="sampleProfile">
-            <div className="sampleTop">
-              <div className="sampleAvatar">JT</div>
-              <div>
-                <p className="eyebrow">Sample profile</p>
-                <h3>Jayden Thompson</h3>
-                <span>Point Guard</span>
+      <section className="section" id="about-us" style={{ paddingTop: 0 }}>
+        <div className="container duo">
+          <div className="panel">
+            <h2 className="display"><span className="red">SHOWCASE</span> YOUR TALENT</h2>
+            <p className="sub">Submit everything coaches need to evaluate you.</p>
+            <div className="tile-grid">
+              {uploadTiles.map((tile) => (
+                <div className={`tile ${tile.includes('YouTube') || tile.includes('Awards') ? 'hot' : ''}`} key={tile}>
+                  <SimpleIcon />
+                  <span>{tile}</span>
+                </div>
+              ))}
+            </div>
+            <Link className="btn" href="/apply">START YOUR APPLICATION</Link>
+          </div>
+
+          <div className="panel panel-dark">
+            <h2 className="display">WHAT <span style={{ color: 'var(--red-bright)' }}>COACHES</span> RECEIVE</h2>
+            <p className="sub">A professional profile with the information they need.</p>
+            <div className="profile-card">
+              <div className="profile-top">
+                <img src="/jayden-photo.png" alt="Jayden Thompson" />
+                <div>
+                  <h3 className="display">JAYDEN THOMPSON</h3>
+                  <p className="profile-meta">Point Guard | 6&apos;2&quot; | 175 lbs | Class of 2026</p>
+                  <p className="profile-team">Mississauga Magic U18 AAA</p>
+                  <table className="profile-rows">
+                    <tbody>
+                      <tr><td>GPA</td><td>3.8</td></tr>
+                      <tr><td>SAT (Est.)</td><td>1180</td></tr>
+                      <tr><td>Position</td><td>PG</td></tr>
+                      <tr><td>High School</td><td>Lorne Park SS</td></tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+              <div className="hl-label display">HIGHLIGHT VIDEO</div>
+              <div className="hl-strip">
+                <img src="/video-main.png" alt="Highlight" />
+                <img src="/video-2.png" alt="Highlight" />
+                <img src="/video-3.png" alt="Highlight" />
               </div>
             </div>
-            <div className="sampleStats">
-              <span><strong>6&apos;2&quot;</strong> Height</span>
-              <span><strong>175lbs</strong> Weight</span>
-              <span><strong>2026</strong> Class</span>
-              <span><strong>3.8</strong> GPA</span>
-              <span><strong>1180</strong> SAT</span>
-              <span><strong>PG</strong> Position</span>
+            <div className="panel-cta">
+              <a className="btn" href="/athletes/jayden-thompson">VIEW SAMPLE PROFILE</a>
             </div>
-            <div className="sampleDetails">
-              <p><strong>Team:</strong> Mississauga Magic U18 AAA</p>
-              <p><strong>High School:</strong> Lorne Park SS</p>
-            </div>
-          </aside>
+          </div>
         </div>
       </section>
 
-      <section id="tracking" className="trackingSection">
-        <div className="trackingCopy">
-          <p className="eyebrow">Recruiting intelligence</p>
-          <h2>WE TRACK. YOU STAY INFORMED.</h2>
-          <p>
-            Families can see what is complete, what is pending, and where the recruiting conversation is moving.
-          </p>
-          <div className="featureGrid">
-            {features.map((feature) => (
-              <article key={feature} className="featureBox">{feature}</article>
-            ))}
-          </div>
-        </div>
-
-        <aside className="dashboardMockup" aria-label="Dashboard screenshot placeholder">
-          <div className="mockupHeader">
-            <span></span>
-            <span></span>
-            <span></span>
-          </div>
-          <div className="mockupBody">
-            <div className="mockupChart"></div>
-            <div className="mockupList">
-              <span></span>
-              <span></span>
-              <span></span>
-              <span></span>
+      <section className="section track">
+        <div className="container track-grid">
+          <div>
+            <h2 className="display">WE <span className="red">TRACK</span>. YOU STAY INFORMED.</h2>
+            <p className="lead">We manage the outreach. You see the results.</p>
+            <div className="feat-grid">
+              {trackingFeatures.map(([title, body]) => (
+                <div className="feat" key={title}>
+                  <SimpleIcon />
+                  <div>
+                    <h4>{title}</h4>
+                    <p>{body}</p>
+                  </div>
+                </div>
+              ))}
             </div>
           </div>
-        </aside>
+          <img src="/dashboard.png" alt="Recruitment Dashboard" />
+        </div>
       </section>
 
-      <section className="statsMapSection" aria-label="Recruitment stats">
-        <div className="canadaMap" aria-label="Canada map graphic">
-          <svg viewBox="0 0 560 260" role="img">
-            <path d="M34 105l42-48 41 28 33-58 54 44 39-48 38 54 54-47 32 61 65-23 18 60 66 11-26 48-82-2-40 42-72-32-58 39-51-42-62 23-29-55-64 5z" />
-            <path d="M102 139l36-26 39 18 52-24 38 25 45-18 56 30 62-8" />
-          </svg>
-        </div>
-        <div className="statsBar">
+      <section className="stats">
+        <div className="container stats-grid">
           {stats.map(([value, label]) => (
-            <div key={label}>
-              <strong>{value}</strong>
-              <span>{label}</span>
+            <div className="stat" key={label}>
+              <div className="v display">{value}</div>
+              <div className="l">{label}</div>
             </div>
           ))}
         </div>
       </section>
 
-      <section id="camps" className="photoStorySection campsStory">
-        <div className="photoStoryCopy">
-          <p className="eyebrow">Camps and exposure</p>
-          <h2>CAMPS THAT PUT DEVELOPMENT IN MOTION.</h2>
-          <p>
-            CPR connects young athletes to competitive basketball environments where effort, coaching, exposure,
-            and confidence can turn potential into opportunity.
-          </p>
-          <div className="storyProofGrid">
-            <span>Elite camp moments</span>
-            <span>Player development</span>
-            <span>Exposure events</span>
-            <span>Recognition and awards</span>
+      <section id="camps" className="photoStorySection legacyPhotoStory">
+        <div className="container legacyPhotoGrid">
+          <div className="photoStoryCopy">
+            <p className="eyebrow">Camps and exposure</p>
+            <h2 className="display">CAMPS THAT PUT DEVELOPMENT IN MOTION.</h2>
+            <p>
+              CPR connects young athletes to competitive basketball environments where effort, coaching, exposure,
+              and confidence can turn potential into opportunity.
+            </p>
           </div>
+          <RotatingImageStack images={campImages} label="Rotating CPR camp photos" />
         </div>
-        <RotatingImageStack images={campImages} label="Rotating CPR camp photos" />
       </section>
 
-      <section id="play-to-win" className="photoStorySection playStory">
-        <RotatingImageStack images={playToWinImages} label="Rotating CPR championship and achievement photos" />
-        <div className="photoStoryCopy">
-          <p className="eyebrow">A Play To Win!</p>
-          <h2>WINNING IS A STANDARD, NOT A SLOGAN.</h2>
-          <p>
-            From local championships to university-level achievement, CPR highlights the habits, proof, and
-            competitive mindset that help players pursue bigger stages.
-          </p>
-          <div className="storyProofGrid">
-            <span>Championship culture</span>
-            <span>Trophies and medals</span>
-            <span>College pathways</span>
-            <span>Results families can see</span>
+      <section id="play-to-win" className="photoStorySection legacyPhotoStory lightStory">
+        <div className="container legacyPhotoGrid reverse">
+          <RotatingImageStack images={playToWinImages} label="Rotating CPR championship and achievement photos" />
+          <div className="photoStoryCopy">
+            <p className="eyebrow">A Play To Win!</p>
+            <h2 className="display">WINNING IS A STANDARD, NOT A SLOGAN.</h2>
+            <p>
+              From local championships to university-level achievement, CPR highlights the habits, proof, and
+              competitive mindset that help players pursue bigger stages.
+            </p>
           </div>
         </div>
       </section>
 
-      <section id="stories" className="storiesSection">
-        <div className="sectionIntro centered">
-          <p className="eyebrow">Success stories</p>
-          <h2>Student-athletes finding the right fit.</h2>
-        </div>
-        <div className="testimonialGrid">
-          {stories.map((item) => (
-            <article key={item.name} className="testimonialCard">
-              <p>&quot;{item.quote}&quot;</p>
-              <strong>{item.name}</strong>
-              <span>{item.school}</span>
-            </article>
-          ))}
+      <section className="section" id="success-stories">
+        <div className="container">
+          <div className="sec-head">
+            <h2 className="display">SUCCESS STORIES</h2>
+          </div>
+          <div className="stories-grid">
+            <div className="story proof">
+              <img src="/proof-canada.jpg" alt="CPR athlete competing for Team Canada." className="proof-img" />
+              <p className="proof-cap">CPR athlete competing for Team Canada.</p>
+            </div>
+            <div className="story proof">
+              <img src="/proof-champion.jpg" alt="From CPR to a conference championship." className="proof-img" />
+              <p className="proof-cap">From CPR to a conference championship.</p>
+            </div>
+            <div className="story proof">
+              <img src="/proof-team.jpg" alt="CPR athletes showcasing at the next level." className="proof-img" />
+              <p className="proof-cap">CPR athletes showcasing at the next level.</p>
+            </div>
+          </div>
         </div>
       </section>
 
-      <section className="ctaBand">
-        <div>
-          <p className="eyebrow">Start today</p>
-          <h2>READY TO TAKE THE NEXT STEP?</h2>
+      <section className="section" id="faq" style={{ paddingTop: 0 }}>
+        <div className="container">
+          <div className="cta-band">
+            <div>
+              <h2 className="display">READY TO TAKE THE NEXT STEP?</h2>
+              <p>Start your application today and take control of your future.</p>
+            </div>
+            <Link className="btn btn-white" href="/apply">APPLY NOW</Link>
+          </div>
         </div>
-        <Link className="secondaryAction lightAction" href="/apply">Apply Now</Link>
       </section>
 
-      <footer className="footer">
-        <div>
-          <CprLogo />
-          <p>
-            Canadian Prospects Recruitment helps Canadian student-athletes organize profiles, reach coaches, and pursue the right school fit.
-          </p>
-        </div>
-        <div>
-          <strong>Quick Links</strong>
-          <Link href="/apply">Apply</Link>
-          <a href="#process">Process</a>
-          <a href="#stories">Success Stories</a>
-        </div>
-        <div>
-          <strong>Resources</strong>
-          <a href="#showcase">Upload Types</a>
-          <a href="#tracking">Tracking</a>
-          <Link href="/admin">Admin Portal</Link>
-        </div>
-        <div>
-          <strong>Contact Us</strong>
-          <span>mmagicman3223@gmail.com</span>
-          <span>@prospects.ca</span>
-          <span>Mississauga Ontario</span>
+      <footer className="footer" id="contact">
+        <div className="container">
+          <div className="footer-grid">
+            <div className="footer-brand">
+              <img src="/cpr-logo.png" alt="CPR logo" />
+              <div>
+                <div className="t display">CANADIAN PROSPECTS RECRUITMENT</div>
+                <p>We connect Canadian student-athletes with opportunities to play basketball at the next level.</p>
+              </div>
+            </div>
+            <div>
+              <h5 className="display">QUICK LINKS</h5>
+              <ul>
+                <li><a href="#about-us">About Us</a></li>
+                <li><a href="#how-it-works">How It Works</a></li>
+                <li><a href="#success-stories">Success Stories</a></li>
+                <li><a href="#faq">FAQ</a></li>
+                <li><a href="#contact">Contact</a></li>
+              </ul>
+            </div>
+            <div>
+              <h5 className="display">RESOURCES</h5>
+              <ul>
+                <li><Link href="/apply">For Athletes</Link></li>
+                <li><Link href="/apply">For Parents</Link></li>
+                <li><Link href="/apply">NCAA Recruiting Guide</Link></li>
+                <li><Link href="/apply">Fee Agreement</Link></li>
+              </ul>
+            </div>
+            <div>
+              <h5 className="display">CONTACT US</h5>
+              <div className="contact-row"><a href="mailto:mikecrpglobal@mississaugamagic.com">mikecrpglobal@mississaugamagic.com</a></div>
+              <div className="contact-row"><a href="https://instagram.com/mississaugamagic">@mississaugamagic</a></div>
+              <div className="contact-row"><span>Mississauga, Ontario</span></div>
+            </div>
+          </div>
+          <div className="copyright">
+            <span>© 2026 Canadian Prospects Recruitment. All Rights Reserved.</span>
+            <span><a href="#top">Privacy Policy</a><a href="#top">Terms of Service</a></span>
+          </div>
         </div>
       </footer>
-    </main>
+    </>
   )
 }
