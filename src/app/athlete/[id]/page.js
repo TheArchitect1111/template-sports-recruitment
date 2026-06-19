@@ -3,6 +3,7 @@ import AthleteProfileCard from '../../../components/athlete/AthleteProfileCard'
 import { createProfileUrl, getAirtableConfig, getAthleteByIdOrSlug } from '../../../lib/airtable'
 
 export const dynamic = 'force-dynamic'
+const supportEmail = 'mikecrpglobal@mississaugamagic.com'
 
 function hasAirtableEnvironment() {
   const { apiKey, baseId, tableId } = getAirtableConfig()
@@ -59,6 +60,7 @@ function ProfileNotFound() {
         <h1>Athlete profile unavailable.</h1>
         <p>The requested athlete profile does not exist or is not available for public viewing.</p>
         <Link className="primaryAction" href="/apply">Apply Now</Link>
+        <a className="secondaryAction" href={`mailto:${supportEmail}?subject=${encodeURIComponent('CPR help: athlete profile')}`}>Need help?</a>
       </section>
     </main>
   )
@@ -99,6 +101,12 @@ export default async function AthletePage({ params }) {
   return (
     <main className="athletePage">
       <AthleteProfileCard athlete={athlete} />
+      <section className="athleteSection athleteHelpSection">
+        <p className="eyebrow">Profile help</p>
+        <h2>Need profile support?</h2>
+        <p>Contact CPR if this profile needs an update, a missing document, or help sharing it with a coach.</p>
+        <a className="secondaryAction" href={`mailto:${supportEmail}?subject=${encodeURIComponent(`CPR help: ${athlete.name || 'athlete profile'}`)}`}>Get profile help</a>
+      </section>
     </main>
   )
 }

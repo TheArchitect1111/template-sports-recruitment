@@ -59,6 +59,8 @@ const trackingFeatures = [
   ['Secure & Private', 'Your information is safe and only shared with coaches.']
 ]
 
+const supportEmail = 'mikecrpglobal@mississaugamagic.com'
+
 const platformModules = [
   ['Player Profiles', 'Professional athlete pages with film, academics, achievements and coach-ready details.', 'profile'],
   ['Coach Outreach', 'Coach directory, share links, response tracking and follow-up management.', 'outreach'],
@@ -108,6 +110,10 @@ function PlatformIcon({ type }) {
       {(paths[type] || paths.profile).map((path) => <path key={path} d={path} />)}
     </svg>
   )
+}
+
+function helpHref(topic) {
+  return `mailto:${supportEmail}?subject=${encodeURIComponent(`CPR help: ${topic}`)}`
 }
 
 export default function Home() {
@@ -255,6 +261,7 @@ export default function Home() {
                 </div>
                 <h3 className="display">{title}</h3>
                 <p>{body}</p>
+                <a className="module-help" href={helpHref(title)}>Get help with {title}</a>
               </div>
             ))}
           </div>
@@ -365,7 +372,8 @@ export default function Home() {
             </div>
             <div>
               <h5 className="display">CONTACT US</h5>
-              <div className="contact-row"><a href="mailto:mikecrpglobal@mississaugamagic.com">mikecrpglobal@mississaugamagic.com</a></div>
+              <div className="contact-row"><a href={`mailto:${supportEmail}`}>{supportEmail}</a></div>
+              <div className="contact-row"><a href={helpHref('general site support')}>Get help with any CPR feature</a></div>
               <div className="contact-row"><a href="https://instagram.com/mississaugamagic">@mississaugamagic</a></div>
               <div className="contact-row"><span>Mississauga, Ontario</span></div>
             </div>

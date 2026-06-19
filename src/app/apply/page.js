@@ -36,6 +36,7 @@ const initialForm = {
 }
 
 const sportOptions = ['Basketball', 'Football', 'Baseball', 'Soccer', 'Volleyball', 'Track', 'Other']
+const supportEmail = 'mikecrpglobal@mississaugamagic.com'
 
 const textFields = [
   ['firstName', 'First name', 'text', true],
@@ -226,6 +227,9 @@ export default function ApplyPage() {
                 <button type="submit" disabled={status === 'loading'}>
                   {status === 'loading' ? 'Submitting...' : 'Submit application'}
                 </button>
+                <a className="secondaryAction" href={`mailto:${supportEmail}?subject=${encodeURIComponent('CPR help: athlete application')}`}>
+                  Need help?
+                </a>
                 {message && <p className={`formMessage ${status}`}>{message}</p>}
                 {profileUrl && (
                   <p className="formMessage success">

@@ -4,6 +4,7 @@ import Link from 'next/link'
 import { useMemo, useState } from 'react'
 
 const statuses = ['New', 'Reviewing', 'Contacted', 'Placed', 'Closed']
+const supportEmail = 'mikecrpglobal@mississaugamagic.com'
 
 function getAthleteName(fields) {
   return `${fields['First Name'] || ''} ${fields['Last Name'] || ''}`.trim() || 'Unnamed athlete'
@@ -163,6 +164,7 @@ export default function AdminPage() {
           <div className="loginHelpLinks">
             <Link href="/admin/forgot-password">Need a fresh password?</Link>
             <Link href="/apply">Sign up / submit athlete profile</Link>
+            <a href={`mailto:${supportEmail}?subject=${encodeURIComponent('CPR help: admin portal')}`}>Need admin help?</a>
           </div>
 
           <div className="adminToolbar">

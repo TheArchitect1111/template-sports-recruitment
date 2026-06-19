@@ -186,6 +186,10 @@
   line-height: 1.65;
 }
 
+.athleteHelpSection {
+  margin: 18px auto 0;
+}
+
 .videoEmbed {
   width: 100%;
   aspect-ratio: 16 / 9;
@@ -1927,6 +1931,21 @@ img {
   color: var(--gray);
   font-size: 13.5px;
   line-height: 1.55;
+}
+
+.module-help {
+  align-self: end;
+  justify-self: start;
+  margin-top: 4px;
+  color: var(--red);
+  font-size: 12.5px;
+  font-weight: 800;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+
+.module-help:hover {
+  color: var(--red-bright);
 }
 
 .stats {
