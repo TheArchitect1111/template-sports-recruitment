@@ -679,6 +679,124 @@ button:disabled {
   padding-block: 20px;
 }
 
+.photoStorySection {
+  width: min(1180px, calc(100% - 40px));
+  display: grid;
+  grid-template-columns: minmax(340px, 0.86fr) minmax(0, 1fr);
+  gap: clamp(24px, 5vw, 72px);
+  align-items: center;
+  margin: 86px auto;
+  padding: clamp(22px, 4vw, 46px);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 8px;
+  background:
+    linear-gradient(135deg, rgba(204, 0, 0, 0.18), rgba(255, 255, 255, 0.03)),
+    #111111;
+  overflow: hidden;
+}
+
+.playStory {
+  grid-template-columns: minmax(0, 1fr) minmax(340px, 0.86fr);
+  background:
+    linear-gradient(135deg, rgba(255, 107, 0, 0.18), rgba(204, 0, 0, 0.12)),
+    #0f0f0f;
+}
+
+.photoStoryCopy {
+  display: grid;
+  gap: 18px;
+}
+
+.photoStoryCopy h2 {
+  font-size: clamp(2.3rem, 4.8vw, 4.7rem);
+}
+
+.photoStoryCopy p {
+  max-width: 660px;
+  margin: 0;
+  color: var(--muted);
+  font-size: clamp(1rem, 1.8vw, 1.18rem);
+  line-height: 1.65;
+}
+
+.storyProofGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  margin-top: 8px;
+}
+
+.storyProofGrid span {
+  min-height: 54px;
+  display: grid;
+  align-items: center;
+  padding: 13px 15px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 8px;
+  color: #ffffff;
+  background: rgba(255, 255, 255, 0.06);
+  font-weight: 900;
+}
+
+.rotatingImageStack {
+  --rotation-duration: 40s;
+  position: relative;
+  min-height: clamp(360px, 52vw, 620px);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 8px;
+  overflow: hidden;
+  background: #080808;
+  box-shadow: 0 28px 80px rgba(0, 0, 0, 0.32);
+}
+
+.playStory .rotatingImageStack {
+  --rotation-duration: 56s;
+}
+
+.rotatingImageStack::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(180deg, transparent 54%, rgba(10, 10, 10, 0.62)),
+    linear-gradient(90deg, rgba(204, 0, 0, 0.2), transparent 38%);
+  pointer-events: none;
+}
+
+.rotatingImageStack img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0;
+  transform: scale(1.04);
+  animation: rotateCprImage var(--rotation-duration) infinite;
+  animation-delay: calc(var(--image-index) * 4s);
+}
+
+.rotatingImageStack img:first-child {
+  opacity: 1;
+}
+
+@keyframes rotateCprImage {
+  0% {
+    opacity: 0;
+    transform: scale(1.04);
+  }
+
+  2%,
+  8% {
+    opacity: 1;
+  }
+
+  13%,
+  100% {
+    opacity: 0;
+    transform: scale(1.11);
+  }
+}
+
 .showcaseGrid,
 .trackingSection {
   display: grid;
@@ -1221,6 +1339,8 @@ textarea {
   .loginHero,
   .showcaseGrid,
   .trackingSection,
+  .photoStorySection,
+  .playStory,
   .formGrid,
   .processGrid,
   .testimonialGrid,
@@ -1251,5 +1371,25 @@ textarea {
   .athleteTable {
     display: block;
     overflow-x: auto;
+  }
+}
+
+@media (max-width: 640px) {
+  .storyProofGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .rotatingImageStack {
+    min-height: 420px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .rotatingImageStack img {
+    animation: none;
+  }
+
+  .rotatingImageStack img:first-child {
+    opacity: 1;
   }
 }

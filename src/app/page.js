@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import Image from 'next/image'
 
 const processSteps = [
   ['Apply', 'Start with a complete athlete profile and family contact details.'],
@@ -35,6 +36,36 @@ const stats = [
   ['$25M+', 'in Scholarship Opportunities']
 ]
 
+const campImages = [
+  '1000240202.jpg',
+  '1000240262.jpg',
+  '1000240198.jpg',
+  '1000240243.jpg',
+  '1000240220.jpg',
+  '1000240208.jpg',
+  '1000240244.jpg',
+  '1000240260.jpg',
+  '1000240258.jpg',
+  '1000240210.jpg'
+].map((name) => `/cpr-home/camps/${name}`)
+
+const playToWinImages = [
+  '1000240212.jpg',
+  '1000240214 (1).jpg',
+  '1000240214.jpg',
+  '1000240216.jpg',
+  '1000240218.jpg',
+  '1000240222.jpg',
+  '1000240224.jpg',
+  '1000240228.jpg',
+  '1000240230.jpg',
+  '1000240232.jpg',
+  '1000240234.jpg',
+  '1000240264.jpg',
+  '1000240268.jpg',
+  '1000240266.jpg'
+].map((name) => `/cpr-home/play-to-win/${name}`)
+
 const stories = [
   {
     quote: 'CPR helped me organize my film, understand coach communication, and find the right academic fit.',
@@ -61,6 +92,25 @@ function CprLogo() {
   )
 }
 
+function RotatingImageStack({ images, label }) {
+  return (
+    <div className="rotatingImageStack" aria-label={label}>
+      {images.map((src, index) => (
+        <Image
+          key={src}
+          src={src}
+          alt=""
+          aria-hidden="true"
+          fill
+          sizes="(max-width: 980px) 100vw, 50vw"
+          className="rotatingPhoto"
+          style={{ '--image-index': index }}
+        />
+      ))}
+    </div>
+  )
+}
+
 export default function Home() {
   return (
     <main>
@@ -74,7 +124,9 @@ export default function Home() {
         </Link>
         <nav className="topNav" aria-label="Main navigation">
           <a href="#process">Process</a>
+          <a href="#camps">Camps</a>
           <a href="#showcase">Showcase</a>
+          <a href="#play-to-win">Play To Win</a>
           <a href="#tracking">Tracking</a>
           <a href="#stories">Stories</a>
           <Link href="/apply">Apply</Link>
@@ -120,6 +172,24 @@ export default function Home() {
         </div>
       </section>
 
+      <section id="camps" className="photoStorySection campsStory">
+        <div className="photoStoryCopy">
+          <p className="eyebrow">Camps and exposure</p>
+          <h2>CAMPS THAT PUT DEVELOPMENT IN MOTION.</h2>
+          <p>
+            CPR connects young athletes to competitive basketball environments where effort, coaching, exposure,
+            and confidence can turn potential into opportunity.
+          </p>
+          <div className="storyProofGrid">
+            <span>Elite camp moments</span>
+            <span>Player development</span>
+            <span>Exposure events</span>
+            <span>Recognition and awards</span>
+          </div>
+        </div>
+        <RotatingImageStack images={campImages} label="Rotating CPR camp photos" />
+      </section>
+
       <section id="showcase" className="showcaseSection">
         <div className="sectionIntro">
           <p className="eyebrow">Athlete showcase</p>
@@ -157,6 +227,24 @@ export default function Home() {
               <p><strong>High School:</strong> Lorne Park SS</p>
             </div>
           </aside>
+        </div>
+      </section>
+
+      <section id="play-to-win" className="photoStorySection playStory">
+        <RotatingImageStack images={playToWinImages} label="Rotating CPR championship and achievement photos" />
+        <div className="photoStoryCopy">
+          <p className="eyebrow">A Play To Win!</p>
+          <h2>WINNING IS A STANDARD, NOT A SLOGAN.</h2>
+          <p>
+            From local championships to university-level achievement, CPR highlights the habits, proof, and
+            competitive mindset that help players pursue bigger stages.
+          </p>
+          <div className="storyProofGrid">
+            <span>Championship culture</span>
+            <span>Trophies and medals</span>
+            <span>College pathways</span>
+            <span>Results families can see</span>
+          </div>
         </div>
       </section>
 
