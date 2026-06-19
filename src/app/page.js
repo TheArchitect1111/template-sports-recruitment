@@ -265,6 +265,9 @@ export default function Home() {
               </div>
             ))}
           </div>
+          <div className="platform-actions">
+            <Link className="btn" href="/portal">OPEN FAMILY HUB</Link>
+          </div>
         </div>
       </section>
 

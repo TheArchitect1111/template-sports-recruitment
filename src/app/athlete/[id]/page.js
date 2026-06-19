@@ -105,6 +105,7 @@ export default async function AthletePage({ params }) {
         <p className="eyebrow">Profile help</p>
         <h2>Need profile support?</h2>
         <p>Contact CPR if this profile needs an update, a missing document, or help sharing it with a coach.</p>
+        <Link className="primaryAction" href={`/portal/family/${athlete.id}`}>Open family hub</Link>
         <a className="secondaryAction" href={`mailto:${supportEmail}?subject=${encodeURIComponent(`CPR help: ${athlete.name || 'athlete profile'}`)}`}>Get profile help</a>
       </section>
     </main>
