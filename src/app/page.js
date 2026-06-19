@@ -124,9 +124,7 @@ export default function Home() {
         </Link>
         <nav className="topNav" aria-label="Main navigation">
           <a href="#process">Process</a>
-          <a href="#camps">Camps</a>
           <a href="#showcase">Showcase</a>
-          <a href="#play-to-win">Play To Win</a>
           <a href="#tracking">Tracking</a>
           <a href="#stories">Stories</a>
           <Link href="/apply">Apply</Link>
@@ -172,24 +170,6 @@ export default function Home() {
         </div>
       </section>
 
-      <section id="camps" className="photoStorySection campsStory">
-        <div className="photoStoryCopy">
-          <p className="eyebrow">Camps and exposure</p>
-          <h2>CAMPS THAT PUT DEVELOPMENT IN MOTION.</h2>
-          <p>
-            CPR connects young athletes to competitive basketball environments where effort, coaching, exposure,
-            and confidence can turn potential into opportunity.
-          </p>
-          <div className="storyProofGrid">
-            <span>Elite camp moments</span>
-            <span>Player development</span>
-            <span>Exposure events</span>
-            <span>Recognition and awards</span>
-          </div>
-        </div>
-        <RotatingImageStack images={campImages} label="Rotating CPR camp photos" />
-      </section>
-
       <section id="showcase" className="showcaseSection">
         <div className="sectionIntro">
           <p className="eyebrow">Athlete showcase</p>
@@ -227,24 +207,6 @@ export default function Home() {
               <p><strong>High School:</strong> Lorne Park SS</p>
             </div>
           </aside>
-        </div>
-      </section>
-
-      <section id="play-to-win" className="photoStorySection playStory">
-        <RotatingImageStack images={playToWinImages} label="Rotating CPR championship and achievement photos" />
-        <div className="photoStoryCopy">
-          <p className="eyebrow">A Play To Win!</p>
-          <h2>WINNING IS A STANDARD, NOT A SLOGAN.</h2>
-          <p>
-            From local championships to university-level achievement, CPR highlights the habits, proof, and
-            competitive mindset that help players pursue bigger stages.
-          </p>
-          <div className="storyProofGrid">
-            <span>Championship culture</span>
-            <span>Trophies and medals</span>
-            <span>College pathways</span>
-            <span>Results families can see</span>
-          </div>
         </div>
       </section>
 
@@ -294,6 +256,42 @@ export default function Home() {
               <span>{label}</span>
             </div>
           ))}
+        </div>
+      </section>
+
+      <section id="camps" className="photoStorySection campsStory">
+        <div className="photoStoryCopy">
+          <p className="eyebrow">Camps and exposure</p>
+          <h2>CAMPS THAT PUT DEVELOPMENT IN MOTION.</h2>
+          <p>
+            CPR connects young athletes to competitive basketball environments where effort, coaching, exposure,
+            and confidence can turn potential into opportunity.
+          </p>
+          <div className="storyProofGrid">
+            <span>Elite camp moments</span>
+            <span>Player development</span>
+            <span>Exposure events</span>
+            <span>Recognition and awards</span>
+          </div>
+        </div>
+        <RotatingImageStack images={campImages} label="Rotating CPR camp photos" />
+      </section>
+
+      <section id="play-to-win" className="photoStorySection playStory">
+        <RotatingImageStack images={playToWinImages} label="Rotating CPR championship and achievement photos" />
+        <div className="photoStoryCopy">
+          <p className="eyebrow">A Play To Win!</p>
+          <h2>WINNING IS A STANDARD, NOT A SLOGAN.</h2>
+          <p>
+            From local championships to university-level achievement, CPR highlights the habits, proof, and
+            competitive mindset that help players pursue bigger stages.
+          </p>
+          <div className="storyProofGrid">
+            <span>Championship culture</span>
+            <span>Trophies and medals</span>
+            <span>College pathways</span>
+            <span>Results families can see</span>
+          </div>
         </div>
       </section>
 
